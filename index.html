@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energy Dashboard - ระบบจัดการพลังงาน</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0a0f1a;
+      font-family: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #e6edf6;
+    }
+
+    input {
+      font-family: inherit;
+    }
+
+    ::selection {
+      background: rgba(120, 160, 200, 0.32);
+    }
+
+    input[type=number]::-webkit-inner-spin-button {
+      opacity: 0.35;
+    }
+
+    .container {
+      min-height: 100vh;
+      background: #0a0f1a;
+      background-image: radial-gradient(1200px 620px at 82% -12%, rgba(255, 255, 255, 0.035), transparent 70%);
+      padding: 18px 22px 42px;
+    }
+
+    .main-content {
+      max-width: 1500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 2px;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid #22d3ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: #22d3ee;
+      box-shadow: 0 0 14px #22d3ee;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #8a99af;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #22d3ee;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid #22d3ee;
+      border-radius: 9px;
+      padding: 9px 15px;
+      background: rgba(34, 211, 238, 0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      background: rgba(34, 211, 238, 0.2);
+    }
+
+    .clock-display {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    .clock-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .clock-date {
+      font-size: 11px;
+      color: #8a99af;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-group, .period-group, .theme-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid #1c2940;
+      border-radius: 8px;
+      padding: 9px 15px;
+      background: #0a0f1a;
+      color: #8a99af;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    button:hover {
+      color: #c3cdda;
+      border-color: #2d3a52;
+    }
+
+    button.active {
+      color: #22d3ee;
+      border-color: #22d3ee;
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    .divider {
+      width: 1px;
+      height: 24px;
+      background: #1c2940;
+    }
+
+    .theme-label {
+      font-size: 11px;
+      color: #5b6b82;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 12px;
+      padding: 13px 18px;
+      flex-wrap: wrap;
+    }
+
+    .status-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 11px #22d3ee;
+    }
+
+    .status-indicator.warning {
+      background: #fbbf24;
+      box-shadow: 0 0 11px #fbbf24;
+    }
+
+    .status-title {
+      font-size: 13px;
+      color: #c3cdda;
+      font-weight: 600;
+    }
+
+    .status-detail {
+      font-size: 12px;
+      color: #8a99af;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .status-action {
+      text-decoration: none;
+      color: #5eead4;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #5eead4;
+      border-radius: 8px;
+      padding: 7px 13px;
+      cursor: pointer;
+    }
+
+    .view-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 14px;
+      padding: 15px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: #8a99af;
+      font-weight: 500;
+    }
+
+    .kpi-value-group {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .kpi-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .kpi-unit {
+      font-size: 13px;
+      color: #8a99af;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: #5b6b82;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 400px;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chart-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .chart-subtitle {
+      font-size: 11px;
+      color: #5b6b82;
+      margin-top: 3px;
+    }
+
+    .readout-box {
+      display: flex;
+      gap: 16px;
+      background: #0a0f1a;
+      border: 1px solid #1c2940;
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+
+    .readout-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .readout-label {
+      font-size: 10px;
+      color: #5b6b82;
+    }
+
+    .readout-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      font-weight: 600;
+      color: #22d3ee;
+    }
+
+    .readout-value.cost {
+      color: #5eead4;
+    }
+
+    .chart-container {
+      flex: 1;
+      min-height: 300px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding-top: 20px;
+    }
+
+    .bar {
+      flex: 1;
+      background: linear-gradient(180deg, #22d3ee, rgba(34, 211, 238, 0.3));
+      border-radius: 6px 6px 0 0;
+      min-height: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.4);
+    }
+
+    .bar-label {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #8a99af;
+      white-space: nowrap;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-badge {
+      font-size: 10px;
+      color: #5eead4;
+      border: 1px solid #5eead4;
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
+
+    .rate-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #0a0f1a;
+      border: 1px solid #1c2940;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .rate-bar {
+      width: 7px;
+      height: 32px;
+      border-radius: 3px;
+    }
+
+    .rate-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .rate-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .rate-value {
+      font-size: 12px;
+      color: #8a99af;
+    }
+
+    .gradient-card {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), transparent 80%);
+      border: 1px solid #22d3ee;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .avg-label {
+      font-size: 12px;
+      color: #8a99af;
+    }
+
+    .avg-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 34px;
+      font-weight: 700;
+      color: #22d3ee;
+      line-height: 1;
+    }
+
+    .avg-unit {
+      font-size: 13px;
+      color: #8a99af;
+    }
+
+    .trend-indicator {
+      font-size: 11px;
+      color: #5b6b82;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trend-up {
+      color: #fbbf24;
+    }
+
+    .cost-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .cost-title {
+      font-size: 12px;
+      color: #8a99af;
+      margin-bottom: 4px;
+    }
+
+    .cost-total {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .cost-bar {
+      display: flex;
+      height: 14px;
+      border-radius: 7px;
+      overflow: hidden;
+      border: 1px solid #1c2940;
+    }
+
+    .cost-bar-segment {
+      background: #22d3ee;
+    }
+
+    .cost-bar-segment.water {
+      background: #5eead4;
+    }
+
+    .cost-bar-segment.gas {
+      background: #fbbf24;
+    }
+
+    .cost-breakdown-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cost-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .cost-item-color {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+    }
+
+    .cost-item-name {
+      flex: 1;
+      color: #c3cdda;
+    }
+
+    .cost-item-percent {
+      color: #5b6b82;
+      font-family: 'IBM Plex Mono', monospace;
+      width: 52px;
+      text-align: right;
+    }
+
+    .cost-item-amount {
+      font-family: 'IBM Plex Mono', monospace;
+      width: 96px;
+      text-align: right;
+    }
+
+    .utilities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .utility-card {
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .utility-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .utility-name-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .utility-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .utility-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .utility-rate {
+      font-size: 10px;
+      color: #5b6b82;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .utility-content {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .utility-usage-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .utility-usage {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .utility-usage.electricity {
+      color: #22d3ee;
+    }
+
+    .utility-usage.water {
+      color: #5eead4;
+    }
+
+    .utility-usage.gas {
+      color: #fbbf24;
+    }
+
+    .utility-unit {
+      font-size: 10px;
+      color: #5b6b82;
+    }
+
+    .spark-chart {
+      flex: 1;
+      max-width: 140px;
+      height: 40px;
+    }
+
+    .utility-footer {
+      border-top: 1px solid #1c2940;
+      padding-top: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .utility-label {
+      font-size: 11px;
+      color: #8a99af;
+    }
+
+    .utility-cost {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .meters-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .meter-group {
+      background: #0f1827;
+      border: 1px solid #1c2940;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .meter-group-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meter-group-bar {
+      width: 9px;
+      height: 28px;
+      border-radius: 3px;
+    }
+
+    .meter-group-title {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .meter-group-count {
+      font-size: 11px;
+      color: #5b6b82;
+    }
+
+    .meter-group-total {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .meter-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(218px, 1fr));
+      gap: 12px;
+    }
+
+    .meter-card {
+      background: #0a0f1a;
+      border: 1px solid #1c2940;
+      border-radius: 11px;
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .meter-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meter-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .meter-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .meter-name {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .meter-tag {
+      font-size: 9px;
+      color: #5b6b82;
+    }
+
+    .meter-content {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .meter-usage-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .meter-usage {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .meter-unit {
+      font-size: 9px;
+      color: #5b6b82;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      color: #3a4760;
+      text-align: center;
+      padding-top: 2px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="main-content">
+      <!-- Header -->
+      <header>
+        <div class="header-left">
+          <div class="logo-box">
+            <div class="logo-dot"></div>
+          </div>
+          <div class="header-text">
+            <div class="header-title">ระบบจัดการพลังงาน</div>
+            <div class="header-subtitle">Energy Monitoring & Cost Control</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <a class="nav-link" href="#meter-entry">Meter Entry</a>
+          <div class="clock-display">
+            <div class="clock-time" id="clock">12:34:56</div>
+            <div class="clock-date" id="date">Monday, June 20, 2024</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <div class="tab-group">
+          <button class="active" onclick="switchTab('overview')">Overview</button>
+          <button onclick="switchTab('detailed')">Detailed</button>
+          <button onclick="switchTab('analysis')">Analysis</button>
+          <button onclick="switchTab('reports')">Reports</button>
+        </div>
+        <div style="display: flex; gap: 18px; align-items: center;">
+          <div class="period-group">
+            <button class="active" onclick="switchPeriod('day')">Day</button>
+            <button onclick="switchPeriod('week')">Week</button>
+            <button onclick="switchPeriod('month')">Month</button>
+            <button onclick="switchPeriod('year')">Year</button>
+          </div>
+          <div class="divider"></div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span class="theme-label">Theme</span>
+            <div class="theme-group">
+              <button class="active" onclick="switchTheme('dark')" title="Dark">◐</button>
+              <button onclick="switchTheme('light')" title="Light">◑</button>
+              <button onclick="switchTheme('auto')" title="Auto">◕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div class="status-indicator" id="statusIndicator"></div>
+        <div class="status-title" id="statusTitle">System Normal</div>
+        <div class="status-detail" id="statusDetail">All meters reporting normally. Last update 2 minutes ago.</div>
+        <div style="flex: 1; min-width: 20px;"></div>
+        <a class="status-action" href="#meter-entry">View Meters</a>
+      </div>
+
+      <!-- View Buttons -->
+      <div class="view-buttons">
+        <button class="active" onclick="switchView('overview')">Overview</button>
+        <button onclick="switchView('meters')">Meters</button>
+      </div>
+
+      <!-- Overview View -->
+      <div id="overviewView">
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+          <!-- Chart Card -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title" id="chartTitle">Daily Consumption</div>
+                <div class="chart-subtitle" id="chartSubtitle">Last 7 days energy usage</div>
+              </div>
+              <div class="readout-box">
+                <div class="readout-item">
+                  <span class="readout-label" id="readoutLabel">Total Usage</span>
+                  <span class="readout-value" id="readoutValue">145.2 kWh</span>
+                </div>
+                <div style="width: 1px; background: #1c2940;"></div>
+                <div class="readout-item">
+                  <span class="readout-label">Total Cost</span>
+                  <span class="readout-value cost" id="readoutCost">$42.80</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-container" id="chartContainer"></div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar">
+            <!-- Rate Card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Current Rates</div>
+                <div class="card-badge">Updated</div>
+              </div>
+              <div id="rateItems"></div>
+            </div>
+
+            <!-- Average Card -->
+            <div class="gradient-card">
+              <div class="avg-label">Average Usage</div>
+              <div>
+                <span class="avg-value" id="avgValue">20.7</span>
+                <span class="avg-unit">kWh / day</span>
+              </div>
+              <div class="trend-indicator">
+                <span>↓ 5.2% from last month</span>
+              </div>
+            </div>
+
+            <!-- Cost Breakdown -->
+            <div class="card">
+              <div class="cost-title">Cost Breakdown</div>
+              <div class="cost-total" id="costTotal">$145.30</div>
+              <div class="cost-bar" id="costBar"></div>
+              <div class="cost-breakdown-items" id="costItems"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Utilities Grid -->
+        <div class="utilities-grid" id="utilitiesGrid"></div>
+      </div>
+
+      <!-- Meters View -->
+      <div id="metersView" class="hidden">
+        <div class="meters-grid" id="metersGrid"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer-text">Energy Dashboard v1.0 • Last sync: <span id="lastSync">2 minutes ago</span></div>
+    </div>
+  </div>
+
+  <script>
+    // Data management
+    let currentTab = 'overview';
+    let currentPeriod = 'day';
+    let currentView = 'overview';
+    let currentTheme = 'dark';
+
+    // Sample data
+    const data = {
+      day: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        values: [18.5, 22.3, 19.8, 25.1, 23.7, 21.4, 14.3],
+        costs: [5.55, 6.69, 5.94, 7.53, 7.11, 6.42, 4.29]
+      },
+      week: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        values: [145.2, 158.6, 142.8, 151.3],
+        costs: [43.56, 47.58, 42.84, 45.39]
+      },
+      month: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        values: [580, 620, 540, 580, 600, 590],
+        costs: [174, 186, 162, 174, 180, 177]
+      },
+      year: {
+        labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+        values: [6800, 7200, 6900, 7100, 7400, 7100],
+        costs: [2040, 2160, 2070, 2130, 2220, 2130]
+      }
+    };
+
+    const utilities = [
+      {
+        name: 'Electricity',
+        color: '#22d3ee',
+        rate: 3.00,
+        rateUnit: '/kWh',
+        usage: 145.2,
+        unit: 'kWh',
+        cost: 435.60,
+        trend: 5.2
+      },
+      {
+        name: 'Water',
+        color: '#5eead4',
+        rate: 2.50,
+        rateUnit: '/m³',
+        usage: 42.8,
+        unit: 'm³',
+        cost: 107.00,
+        trend: -2.1
+      },
+      {
+        name: 'Gas',
+        color: '#fbbf24',
+        rate: 1.85,
+        rateUnit: '/m³',
+        usage: 28.5,
+        unit: 'm³',
+        cost: 52.72,
+        trend: 1.8
+      }
+    ];
+
+    const kpis = [
+      { label: 'Total Consumption', value: 145.2, unit: 'kWh', sub: '↓ 5.2% vs last month', color: '#22d3ee' },
+      { label: 'Total Cost', value: 595.32, unit: '$', sub: '↑ 2.1% vs last month', color: '#5eead4' },
+      { label: 'Peak Usage', value: 25.1, unit: 'kWh', sub: 'Thursday at 18:45', color: '#fbbf24' },
+      { label: 'Average Daily', value: 20.7, unit: 'kWh/day', sub: 'Based on this month', color: '#818cf8' }
+    ];
+
+    const meters = [
+      { name: 'Meter 001', tag: 'Kitchen', color: '#22d3ee', usage: 32.4, unit: 'kWh', cost: 97.20 },
+      { name: 'Meter 002', tag: 'Living Room', color: '#5eead4', usage: 28.6, unit: 'kWh', cost: 85.80 },
+      { name: 'Meter 003', tag: 'Bedroom', color: '#818cf8', usage: 18.2, unit: 'kWh', cost: 54.60 },
+      { name: 'Meter 004', tag: 'Bathroom', color: '#fbbf24', usage: 11.8, unit: 'kWh', cost: 35.40 },
+      { name: 'Meter 005', tag: 'Garage', color: '#22d3ee', usage: 15.2, unit: 'kWh', cost: 45.60 },
+      { name: 'Meter 006', tag: 'Garden', color: '#5eead4', usage: 39.0, unit: 'kWh', cost: 117.00 }
+    ];
+
+    // Update clock
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+      document.getElementById('date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Render chart
+    function renderChart() {
+      const container = document.getElementById('chartContainer');
+      container.innerHTML = '';
+
+      const currentData = data[currentPeriod];
+      const maxValue = Math.max(...currentData.values);
+
+      currentData.values.forEach((value, index) => {
+        const height = (value / maxValue) * 280;
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = height + 'px';
+        bar.innerHTML = `<div class="bar-label">${currentData.labels[index]}</div>`;
+        bar.onclick = () => showBarDetail(index, value, currentData.costs[index]);
+        container.appendChild(bar);
+      });
+
+      // Update readouts
+      const totalUsage = currentData.values.reduce((a, b) => a + b, 0);
+      const totalCost = currentData.costs.reduce((a, b) => a + b, 0);
+      const unit = currentPeriod === 'day' ? 'kWh' : (currentPeriod === 'week' ? 'kWh' : 'kWh');
+
+      document.getElementById('readoutValue').textContent = `${totalUsage.toFixed(1)} ${unit}`;
+      document.getElementById('readoutCost').textContent = `$${totalCost.toFixed(2)}`;
+    }
+
+    function showBarDetail(index, value, cost) {
+      const labels = data[currentPeriod].labels;
+      alert(`${labels[index]}: ${value.toFixed(1)} kWh - $${cost.toFixed(2)}`);
+    }
+
+    // Render KPIs
+    function renderKPIs() {
+      const grid = document.getElementById('kpiGrid');
+      grid.innerHTML = '';
+
+      kpis.forEach(kpi => {
+        const card = document.createElement('div');
+        card.className = 'kpi-card';
+        card.innerHTML = `
+          <div class="kpi-label">${kpi.label}</div>
+          <div class="kpi-value-group">
+            <span class="kpi-value" style="color: ${kpi.color};">${kpi.value.toFixed(1)}</span>
+            <span class="kpi-unit">${kpi.unit}</span>
+          </div>
+          <div class="kpi-sub">${kpi.sub}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Render utilities
+    function renderUtilities() {
+      const grid = document.getElementById('utilitiesGrid');
+      grid.innerHTML = '';
+
+      utilities.forEach(util => {
+        const spark = generateSparkline();
+        const card = document.createElement('div');
+        card.className = 'utility-card';
+        card.innerHTML = `
+          <div class="utility-header">
+            <div class="utility-name-group">
+              <div class="utility-dot" style="background: ${util.color}; box-shadow: 0 0 9px ${util.color};"></div>
+              <span class="utility-name">${util.name}</span>
+            </div>
+            <span class="utility-rate">${util.rate.toFixed(2)} ${util.rateUnit}</span>
+          </div>
+          <div class="utility-content">
+            <div class="utility-usage-group">
+              <span class="utility-usage" style="color: ${util.color};">${util.usage.toFixed(1)}</span>
+              <span class="utility-unit">${util.unit}</span>
+            </div>
+            <svg class="spark-chart" viewBox="0 0 140 40" xmlns="http://www.w3.org/2000/svg">
+              ${spark}
+            </svg>
+          </div>
+          <div class="utility-footer">
+            <span class="utility-label">This month</span>
+            <span class="utility-cost">$${util.cost.toFixed(2)}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function generateSparkline() {
+      const points = [5, 12, 8, 20, 15, 25, 18, 28, 22, 30, 26, 35].map((v, i) => {
+        const x = (i / 11) * 140;
+        const y = 40 - (v / 35) * 35;
+        return `${x},${y}`;
+      });
+
+      return `<polyline points="${points.join(' ')}" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6" />`;
+    }
+
+    // Render rates
+    function renderRates() {
+      const container = document.getElementById('rateItems');
+      container.innerHTML = '';
+
+      utilities.forEach(util => {
+        const item = document.createElement('div');
+        item.className = 'rate-item';
+        item.innerHTML = `
+          <div class="rate-bar" style="background: ${util.color};"></div>
+          <div class="rate-content">
+            <div class="rate-name">${util.name}</div>
+            <div class="rate-value">$${util.rate.toFixed(2)}/${util.rateUnit.replace('/', '')}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Render cost breakdown
+    function renderCostBreakdown() {
+      const totalCost = utilities.reduce((sum, u) => sum + u.cost, 0);
+      const percentages = utilities.map(u => (u.cost / totalCost) * 100);
+
+      document.getElementById('costTotal').textContent = `$${totalCost.toFixed(2)}`;
+
+      // Render cost bar
+      const costBar = document.getElementById('costBar');
+      costBar.innerHTML = '';
+      const colors = ['', 'water', 'gas'];
+      percentages.forEach((pct, idx) => {
+        const segment = document.createElement('div');
+        segment.className = `cost-bar-segment ${colors[idx]}`;
+        segment.style.width = pct + '%';
+        costBar.appendChild(segment);
+      });
+
+      // Render cost items
+      const costItems = document.getElementById('costItems');
+      costItems.innerHTML = '';
+      utilities.forEach((util, idx) => {
+        const pct = percentages[idx];
+        const item = document.createElement('div');
+        item.className = 'cost-item';
+        item.innerHTML = `
+          <div class="cost-item-color" style="background: ${util.color};"></div>
+          <span class="cost-item-name">${util.name}</span>
+          <span class="cost-item-percent">${pct.toFixed(1)}%</span>
+          <span class="cost-item-amount">$${util.cost.toFixed(2)}</span>
+        `;
+        costItems.appendChild(item);
+      });
+    }
+
+    // Render meters view
+    function renderMetersView() {
+      const grid = document.getElementById('metersGrid');
+      grid.innerHTML = '';
+
+      // Group meters by color/type
+      const groups = {};
+      meters.forEach(meter => {
+        if (!groups[meter.tag]) {
+          groups[meter.tag] = [];
+        }
+        groups[meter.tag].push(meter);
+      });
+
+      // Render groups
+      const groupArray = Object.entries(groups);
+      groupArray.forEach(([tag, groupMeters], idx) => {
+        const colors = ['#22d3ee', '#5eead4', '#818cf8', '#fbbf24'];
+        const color = colors[idx % colors.length];
+        const totalUsage = groupMeters.reduce((sum, m) => sum + m.usage, 0);
+
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'meter-group';
+        groupDiv.innerHTML = `
+          <div class="meter-group-header">
+            <div class="meter-group-bar" style="background: ${color}; box-shadow: 0 0 10px ${color};"></div>
+            <div class="meter-group-title">${tag} Area</div>
+            <div class="meter-group-count">${groupMeters.length} meters</div>
+            <div class="meter-group-total" style="color: ${color};">${totalUsage.toFixed(1)} <span style="font-size: 11px; color: #8a99af;">kWh</span></div>
+          </div>
+          <div class="meter-cards"></div>
+        `;
+
+        const cardsContainer = groupDiv.querySelector('.meter-cards');
+        groupMeters.forEach(meter => {
+          const card = document.createElement('div');
+          card.className = 'meter-card';
+          card.innerHTML = `
+            <div class="meter-header">
+              <div class="meter-dot" style="background: ${meter.color};"></div>
+              <div class="meter-info">
+                <div class="meter-name">${meter.name}</div>
+                <div class="meter-tag">${meter.tag}</div>
+              </div>
+            </div>
+            <div class="meter-content">
+              <div class="meter-usage-group">
+                <span class="meter-usage" style="color: ${meter.color};">${meter.usage.toFixed(1)}</span>
+                <span class="meter-unit">${meter.unit}</span>
+              </div>
+              <svg class="spark-chart" viewBox="0 0 96 30" xmlns="http://www.w3.org/2000/svg">
+                ${generateSparkline()}
+              </svg>
+            </div>
+            <div style="border-top: 1px solid #16202f; padding-top: 8px; font-size: 10px; color: #5b6b82;">Cost: $${meter.cost.toFixed(2)}</div>
+          `;
+          cardsContainer.appendChild(card);
+        });
+
+        grid.appendChild(groupDiv);
+      });
+    }
+
+    // Switch functions
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-group button').forEach((btn, i) => {
+        btn.classList.toggle('active', ['overview', 'detailed', 'analysis', 'reports'][i] === tab);
+      });
+    }
+
+    function switchPeriod(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.period-group button').forEach((btn, i) => {
+        btn.classList.toggle('active', ['day', 'week', 'month', 'year'][i] === period);
+      });
+      renderChart();
+    }
+
+    function switchTheme(theme) {
+      currentTheme = theme;
+      document.querySelectorAll('.theme-group button').forEach((btn, i) => {
+        btn.classList.toggle('active', ['dark', 'light', 'auto'][i] === theme);
+      });
+      // TODO: Implement theme switching
+    }
+
+    function switchView(view) {
+      currentView = view;
+      document.getElementById('overviewView').classList.toggle('hidden', view !== 'overview');
+      document.getElementById('metersView').classList.toggle('hidden', view !== 'meters');
+
+      document.querySelectorAll('.view-buttons button').forEach((btn, i) => {
+        btn.classList.toggle('active', ['overview', 'meters'][i] === view);
+      });
+
+      if (view === 'meters') {
+        renderMetersView();
+      }
+    }
+
+    // Initialize
+    function init() {
+      renderChart();
+      renderKPIs();
+      renderRates();
+      renderCostBreakdown();
+      renderUtilities();
+
+      // Update last sync time periodically
+      setInterval(() => {
+        document.getElementById('lastSync').textContent = 'Just now';
+      }, 60000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
