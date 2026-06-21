@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Energy Dashboard - ระบบจัดการพลังงาน</title>
+  <!-- Supabase client (progressive: ใช้ต่อเมื่อกรอก config.js แล้วเท่านั้น) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -969,7 +972,7 @@
     let currentTheme = 'dark';
 
     // Sample data
-    const data = {
+    let data = {
       day: {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         values: [18.5, 22.3, 19.8, 25.1, 23.7, 21.4, 14.3],
@@ -992,7 +995,7 @@
       }
     };
 
-    const utilities = [
+    let utilities = [
       {
         name: 'Electricity',
         color: '#22d3ee',
@@ -1025,14 +1028,14 @@
       }
     ];
 
-    const kpis = [
+    let kpis = [
       { label: 'Total Consumption', value: 145.2, unit: 'kWh', sub: '↓ 5.2% vs last month', color: '#22d3ee' },
       { label: 'Total Cost', value: 595.32, unit: '$', sub: '↑ 2.1% vs last month', color: '#5eead4' },
       { label: 'Peak Usage', value: 25.1, unit: 'kWh', sub: 'Thursday at 18:45', color: '#fbbf24' },
       { label: 'Average Daily', value: 20.7, unit: 'kWh/day', sub: 'Based on this month', color: '#818cf8' }
     ];
 
-    const meters = [
+    let meters = [
       { name: 'Meter 001', tag: 'Kitchen', color: '#22d3ee', usage: 32.4, unit: 'kWh', cost: 97.20 },
       { name: 'Meter 002', tag: 'Living Room', color: '#5eead4', usage: 28.6, unit: 'kWh', cost: 85.80 },
       { name: 'Meter 003', tag: 'Bedroom', color: '#818cf8', usage: 18.2, unit: 'kWh', cost: 54.60 },
@@ -1310,8 +1313,131 @@
       }
     }
 
+    // ---------- Supabase data layer (progressive enhancement) ----------
+    // ถ้ากรอก config.js แล้ว จะดึงข้อมูลจริงมาแทนข้อมูลตัวอย่าง
+    // ถ้ายังไม่ได้กรอก ก็ใช้ข้อมูลตัวอย่างในตัวต่อไป
+    function supabaseReady() {
+      return window.SUPABASE_CONFIG &&
+             window.SUPABASE_CONFIG.url &&
+             window.SUPABASE_CONFIG.anonKey &&
+             window.supabase;
+    }
+
+    async function loadFromSupabase() {
+      const { url, anonKey } = window.SUPABASE_CONFIG;
+      const client = window.supabase.createClient(url, anonKey);
+
+      // ดึงประเภทสาธารณูปโภค + มิเตอร์ + ค่าอ่าน 7 วันล่าสุด พร้อมกัน
+      const since = new Date();
+      since.setDate(since.getDate() - 6);
+      const sinceStr = since.toISOString().slice(0, 10);
+
+      const [utilRes, meterRes, readRes] = await Promise.all([
+        client.from('utilities').select('*').order('sort_order'),
+        client.from('meters').select('*'),
+        client.from('readings').select('*').gte('reading_date', sinceStr)
+      ]);
+
+      if (utilRes.error || meterRes.error || readRes.error) {
+        throw utilRes.error || meterRes.error || readRes.error;
+      }
+
+      const utils = utilRes.data || [];
+      const meterRows = meterRes.data || [];
+      const reads = readRes.data || [];
+      if (utils.length === 0) return false; // ยังไม่มีข้อมูลใน DB → คงข้อมูลตัวอย่างไว้
+
+      // จัดกลุ่มค่าอ่านตามมิเตอร์
+      const byMeter = {};
+      reads.forEach(r => {
+        (byMeter[r.meter_id] = byMeter[r.meter_id] || []).push(r);
+      });
+
+      // --- meters[] ---
+      meters = meterRows.map(m => {
+        const u = utils.find(x => x.id === m.utility_id) || {};
+        const usage = (byMeter[m.id] || []).reduce((s, r) => s + Number(r.value), 0);
+        return {
+          name: m.name,
+          tag: m.tag || '',
+          color: m.color || u.color || '#22d3ee',
+          usage: usage,
+          unit: u.unit || 'kWh',
+          cost: usage * Number(u.rate || 0)
+        };
+      });
+
+      // --- utilities[] (รวมการใช้ต่อประเภท) ---
+      utilities = utils.map(u => {
+        const myMeters = meterRows.filter(m => m.utility_id === u.id).map(m => m.id);
+        const usage = reads
+          .filter(r => myMeters.includes(r.meter_id))
+          .reduce((s, r) => s + Number(r.value), 0);
+        return {
+          name: u.name,
+          color: u.color,
+          rate: Number(u.rate),
+          rateUnit: u.rate_unit,
+          usage: usage,
+          unit: u.unit,
+          cost: usage * Number(u.rate),
+          trend: 0
+        };
+      });
+
+      // --- data.day (กราฟ 7 วันล่าสุด รวมทุกมิเตอร์) ---
+      const dayMap = {};
+      reads.forEach(r => {
+        dayMap[r.reading_date] = (dayMap[r.reading_date] || 0) + Number(r.value);
+      });
+      const days = Object.keys(dayMap).sort();
+      if (days.length) {
+        const elec = utils.find(u => u.id === 'electricity') || utils[0];
+        const rate = Number(elec.rate || 0);
+        data.day = {
+          labels: days.map(d => new Date(d).toLocaleDateString('en-US', { weekday: 'short' })),
+          values: days.map(d => +dayMap[d].toFixed(1)),
+          costs: days.map(d => +(dayMap[d] * rate).toFixed(2))
+        };
+      }
+
+      // --- kpis[] ---
+      const totalUsage = utilities.reduce((s, u) => s + u.usage, 0);
+      const totalCost = utilities.reduce((s, u) => s + u.cost, 0);
+      const dayVals = data.day ? data.day.values : [];
+      const peak = dayVals.length ? Math.max(...dayVals) : 0;
+      const avg = dayVals.length ? totalUsage / dayVals.length : 0;
+      kpis = [
+        { label: 'Total Consumption', value: totalUsage, unit: 'kWh', sub: 'รวมทุกมิเตอร์ 7 วันล่าสุด', color: '#22d3ee' },
+        { label: 'Total Cost', value: totalCost, unit: '฿', sub: 'คำนวณจากอัตราค่าบริการ', color: '#5eead4' },
+        { label: 'Peak Usage', value: peak, unit: 'kWh', sub: 'วันที่ใช้สูงสุด', color: '#fbbf24' },
+        { label: 'Average Daily', value: avg, unit: 'kWh/day', sub: 'เฉลี่ย 7 วันล่าสุด', color: '#818cf8' }
+      ];
+
+      return true;
+    }
+
     // Initialize
-    function init() {
+    async function init() {
+      if (supabaseReady()) {
+        try {
+          const ok = await loadFromSupabase();
+          if (ok) {
+            document.getElementById('statusTitle').textContent = 'Live Data';
+            document.getElementById('statusDetail').textContent = 'เชื่อมต่อ Supabase สำเร็จ • แสดงข้อมูลจริง';
+          }
+        } catch (e) {
+          console.error('Supabase load failed, ใช้ข้อมูลตัวอย่างแทน:', e);
+          const ind = document.getElementById('statusIndicator');
+          if (ind) ind.classList.add('warning');
+          document.getElementById('statusTitle').textContent = 'Sample Data';
+          document.getElementById('statusDetail').textContent = 'เชื่อม Supabase ไม่สำเร็จ • กำลังแสดงข้อมูลตัวอย่าง';
+        }
+      } else {
+        document.getElementById('statusTitle').textContent = 'Sample Data';
+        document.getElementById('statusDetail').textContent = 'ยังไม่ได้ตั้งค่า Supabase • แสดงข้อมูลตัวอย่าง (แก้ที่ config.js)';
+      }
+
       renderChart();
       renderKPIs();
       renderRates();
