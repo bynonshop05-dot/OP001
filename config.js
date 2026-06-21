@@ -9,6 +9,6 @@
 // ถ้าเว้นว่างไว้ เว็บจะใช้ "ข้อมูลตัวอย่าง" ในตัวต่อไป (ยังเปิดดูได้ปกติ)
 // ============================================================
 window.SUPABASE_CONFIG = {
-  url: "",
-  anonKey: ""
+  url: "https://avvnfdybnzsinvklvkxu.supabase.co",
+  anonKey: "sb_publishable_CLvurerWxDIa1ILNcSRveg_DdBG4m6w"
 };
