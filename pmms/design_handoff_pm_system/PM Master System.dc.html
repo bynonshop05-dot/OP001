@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#16140f}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#37322a;border-radius:10px}
+  ::-webkit-scrollbar-thumb:hover{background:#4a443a}
+  ::-webkit-scrollbar-track{background:transparent}
+  @keyframes pmpulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes drawerin{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="display:flex;height:100vh;width:100%;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai',sans-serif;overflow:hidden">
+
+  <aside style="width:236px;flex:none;background:#1b1813;border-right:1px solid #2b2720;display:flex;flex-direction:column;padding:18px 14px">
+    <div style="display:flex;align-items:center;gap:11px;padding:6px 6px 18px">
+      <div style="width:44px;height:44px;flex:none;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.35)">
+        <img src="assets/kasetchon-logo.png" alt="เกษตรชล 2559" style="width:100%;height:100%;object-fit:cover"></img>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+        <span style="font-size:14px;font-weight:600;letter-spacing:.01em">เกษตรชล 2559</span>
+        <span style="font-size:9.5px;color:#736e63;font-family:'IBM Plex Mono';letter-spacing:.04em">PM MASTER SYSTEM</span>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:#5c5648;letter-spacing:.12em;padding:8px 10px 6px;font-weight:600">เมนูหลัก / MENU</div>
+    <nav style="display:flex;flex-direction:column;gap:3px">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="6">
+        <button onClick="{{ item.onClick }}" style="{{ item.style }}" style-hover="background:#26221b">
+          <span style="display:flex;width:18px;height:18px;flex:none">{{ item.icon }}</span>
+          <span style="flex:1;text-align:left;font-size:13.5px">{{ item.th }}</span>
+          <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ true }}">
+            <span style="{{ item.badgeStyle }}">{{ item.badge }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="margin-top:auto;border-top:1px solid #2b2720;padding-top:14px;display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;flex:none;border-radius:50%;background:#37322a;display:flex;align-items:center;justify-content:center;font-size:13px;color:#f5f1e8;font-weight:600">มร</div>
+      <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+        <span style="font-size:12.5px;font-weight:500">ไมตรี รุ่งเรืองศรี</span>
+        <span style="font-size:10.5px;color:#736e63">Engineering Manager</span>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:64px;flex:none;border-bottom:1px solid #2b2720;background:#1b1813;display:flex;align-items:center;gap:18px;padding:0 26px">
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <h1 style="margin:0;font-size:16px;font-weight:600;letter-spacing:.01em">{{ pageTitleTh }}</h1>
+        <span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono';letter-spacing:.04em">{{ pageTitleEn }}</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:8px;background:#16140f;border:1px solid #2b2720;border-radius:8px;padding:8px 12px;width:240px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#736e63" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span style="font-size:12.5px;color:#5c5648">ค้นหาเครื่องจักร, PM...</span>
+      </div>
+      <button style="position:relative;width:38px;height:38px;border-radius:8px;border:1px solid #2b2720;background:#16140f;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#26221b">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a59f92" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+        <span style="position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#ef4444;border:2px solid #1b1813;animation:pmpulse 2s infinite"></span>
+      </button>
+      <button onClick="{{ openPm }}" style="height:38px;padding:0 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-family:'IBM Plex Sans Thai';font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 3px 12px rgba(249,115,22,.3)" style-hover="filter:brightness(1.08)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        สร้าง PM
+      </button>
+    </header>
+
+    <div style="flex:1;overflow-y:auto;padding:24px 26px">
+
+      <!-- ============ DASHBOARD ============ -->
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+              <div style="flex:1;min-width:158px;background:#211e18;border:1px solid #2b2720;border-radius:11px;padding:15px 17px;display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;border-radius:2px;background:{{ k.color }}"></span>
+                  <span style="font-size:11.5px;color:#a59f92;font-family:'IBM Plex Mono';letter-spacing:.02em">{{ k.en }}</span>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:6px">
+                  <span style="font-family:'IBM Plex Mono';font-size:30px;font-weight:600;color:#f5f1e8;line-height:1">{{ k.val }}</span>
+                  <span style="font-size:11.5px;color:#736e63">{{ k.unit }}</span>
+                </div>
+                <span style="font-size:11.5px;color:#a59f92">{{ k.th }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px 20px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <div style="display:flex;flex-direction:column;gap:2px">
+                    <span style="font-size:13.5px;font-weight:600">แนวโน้ม PM รายเดือน</span>
+                    <span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono'">Monthly PM Completion Trend</span>
+                  </div>
+                  <span style="font-size:11px;color:#22c55e;font-family:'IBM Plex Mono';background:#22c55e1a;padding:4px 9px;border-radius:6px">▲ +5.2%</span>
+                </div>
+                <div style="display:flex;align-items:flex-end;gap:7px;height:150px;padding-top:8px">
+                  <sc-for list="{{ trend }}" as="t" hint-placeholder-count="12">
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end">
+                      <div style="width:100%;max-width:24px;border-radius:5px 5px 2px 2px;background:linear-gradient(#fb923c,#c2410c);height:{{ t.h }}px"></div>
+                      <span style="font-size:9px;color:#736e63;font-family:'IBM Plex Mono'">{{ t.m }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px 20px">
+                <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:16px">
+                  <span style="font-size:13.5px;font-weight:600">วิเคราะห์สาเหตุ Breakdown</span>
+                  <span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono'">Breakdown Analysis by System</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <sc-for list="{{ breakdown }}" as="b" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:7px">
+                      <div style="display:flex;justify-content:space-between;font-size:12px">
+                        <span style="color:#cabfa9">{{ b.label }}</span>
+                        <span style="font-family:'IBM Plex Mono';color:#f5f1e8">{{ b.pctLabel }}</span>
+                      </div>
+                      <div style="height:9px;background:#16140f;border-radius:5px;overflow:hidden">
+                        <div style="height:100%;border-radius:5px;width:{{ b.pct }}%;background:{{ b.color }}"></div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;align-items:center">
+                <span style="font-size:13.5px;font-weight:600;align-self:flex-start">อัตราความสำเร็จ PM</span>
+                <span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono';align-self:flex-start;margin-bottom:6px">PM Completion Rate</span>
+                <div style="position:relative;width:150px;height:150px;margin:6px 0">
+                  <svg width="150" height="150" viewBox="0 0 150 150">
+                    <circle cx="75" cy="75" r="60" fill="none" stroke="#2b2720" stroke-width="14"></circle>
+                    <circle cx="75" cy="75" r="60" fill="none" stroke="#f97316" stroke-width="14" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="15" transform="rotate(-90 75 75)"></circle>
+                  </svg>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                    <span style="font-family:'IBM Plex Mono';font-size:34px;font-weight:600;line-height:1">96%</span>
+                    <span style="font-size:10.5px;color:#736e63;margin-top:3px">เป้าหมาย 95%</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:18px;margin-top:4px">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                    <span style="font-family:'IBM Plex Mono';font-size:18px;font-weight:600;color:#3b82f6">185</span>
+                    <span style="font-size:10.5px;color:#736e63">MTBF (ชม.)</span>
+                  </div>
+                  <div style="width:1px;background:#2b2720"></div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                    <span style="font-family:'IBM Plex Mono';font-size:18px;font-weight:600;color:#22c55e">2.3</span>
+                    <span style="font-size:10.5px;color:#736e63">MTTR (ชม.)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px 20px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                  <span style="font-size:13.5px;font-weight:600">แจ้งเตือนล่าสุด</span>
+                  <span style="font-size:11px;color:#f97316;font-family:'IBM Plex Mono';cursor:pointer">ดูทั้งหมด</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="4">
+                    <div style="display:flex;gap:11px;padding:10px 8px;border-radius:8px;cursor:pointer" style-hover="background:#26221b">
+                      <span style="width:9px;height:9px;flex:none;margin-top:4px;border-radius:50%;background:{{ a.dot }}"></span>
+                      <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                        <span style="font-size:12.5px;color:#e8e2d6;line-height:1.35">{{ a.th }}</span>
+                        <span style="font-size:10.5px;color:#736e63;font-family:'IBM Plex Mono'">{{ a.meta }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ MACHINES ============ -->
+      <sc-if value="{{ isMachines }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:9px;background:#211e18;border:1px solid #2b2720;border-radius:9px;padding:9px 13px;width:300px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#736e63" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+              <input value="{{ q }}" onInput="{{ onSearch }}" placeholder="ค้นหา รหัส / ชื่อ / แผนก" style="flex:1;border:none;outline:none;background:transparent;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px"></input>
+            </div>
+            <div style="flex:1"></div>
+            <button onClick="{{ openImport }}" style="height:38px;padding:0 14px;border-radius:8px;border:1px solid #2b2720;background:#211e18;color:#cabfa9;font-size:12.5px;font-family:'IBM Plex Sans Thai';cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="background:#26221b">⤓ Import Excel</button>
+            <button onClick="{{ onExport }}" style="height:38px;padding:0 14px;border-radius:8px;border:1px solid #2b2720;background:#211e18;color:#cabfa9;font-size:12.5px;font-family:'IBM Plex Sans Thai';cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="background:#26221b">⤒ Export</button>
+            <button onClick="{{ openMachine }}" style="height:38px;padding:0 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer">+ เพิ่มเครื่องจักร</button>
+          </div>
+
+          <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:96px 1.6fr 1.1fr 1.1fr 1fr 96px 44px;gap:14px;padding:13px 20px;border-bottom:1px solid #2b2720;font-size:10.5px;color:#736e63;font-family:'IBM Plex Mono';letter-spacing:.05em;font-weight:600">
+              <span>CODE</span><span>ชื่อเครื่องจักร</span><span>แผนก/ระบบ</span><span>พื้นที่</span><span>รุ่น / Model</span><span>สถานะ</span><span></span>
+            </div>
+            <sc-for list="{{ filteredMachines }}" as="m" hint-placeholder-count="8">
+              <div style="display:grid;grid-template-columns:96px 1.6fr 1.1fr 1.1fr 1fr 96px 44px;gap:14px;padding:14px 20px;border-bottom:1px solid #211e18;align-items:center" style-hover="background:#26221b">
+                <span style="font-family:'IBM Plex Mono';font-size:12.5px;color:#f97316;font-weight:500">{{ m.code }}</span>
+                <span style="font-size:13px;color:#e8e2d6">{{ m.name }}</span>
+                <span style="font-size:12.5px;color:#a59f92">{{ m.dept }}</span>
+                <span style="font-size:12.5px;color:#a59f92">{{ m.area }}</span>
+                <span style="font-size:12px;color:#a59f92;font-family:'IBM Plex Mono'">{{ m.model }}</span>
+                <span style="justify-self:start;font-size:11px;font-family:'IBM Plex Mono';padding:4px 10px;border-radius:6px;color:{{ m.statusColor }};background:{{ m.statusBg }}">{{ m.status }}</span>
+                <button onClick="{{ m.onDelete }}" title="ลบเครื่องจักร" style="width:32px;height:32px;justify-self:center;border-radius:7px;border:1px solid #2b2720;background:#16140f;color:#a59f92;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#ef444418;border-color:#ef444455;color:#f87171">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>
+                </button>
+              </div>
+            </sc-for>
+            <div style="padding:13px 20px;font-size:11.5px;color:#736e63;font-family:'IBM Plex Mono'">แสดง {{ machineCount }} จาก 325 เครื่อง</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ PM PLANS ============ -->
+      <sc-if value="{{ isPlans }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px">
+          <sc-for list="{{ plans }}" as="p" hint-placeholder-count="6">
+            <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px;opacity:{{ p.cardOpacity }}" style-hover="border-color:#3a352c">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <span style="font-family:'IBM Plex Mono';font-size:13.5px;color:#f97316;font-weight:600">{{ p.no }}</span>
+                  <span style="font-size:13.5px;color:#e8e2d6;font-weight:500">{{ p.machine }}</span>
+                </div>
+                <span style="font-size:10.5px;font-family:'IBM Plex Mono';padding:4px 9px;border-radius:6px;color:{{ p.prioColor }};background:{{ p.prioBg }}">{{ p.priority }}</span>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span style="font-size:11px;color:#a59f92;background:#16140f;border:1px solid #2b2720;padding:4px 10px;border-radius:6px">⟳ {{ p.freq }}</span>
+                <span style="font-size:11px;color:#a59f92;background:#16140f;border:1px solid #2b2720;padding:4px 10px;border-radius:6px">{{ p.dept }}</span>
+              </div>
+              <sc-if value="{{ p.hasDesc }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:12px;color:#a59f92;line-height:1.45;border-left:2px solid #37322a;padding-left:10px">{{ p.desc }}</span>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px">
+                  <span style="color:#736e63">ความคืบหน้ารอบนี้</span>
+                  <span style="font-family:'IBM Plex Mono';color:#cabfa9">{{ p.progress }}%</span>
+                </div>
+                <div style="height:7px;background:#16140f;border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;width:{{ p.progress }}%;background:{{ p.barColor }}"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2b2720;padding-top:12px">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:10px;color:#736e63">ครบกำหนดถัดไป</span>
+                  <span style="font-size:12px;font-family:'IBM Plex Mono';color:{{ p.dueColor }}">{{ p.due }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">
+                  <span style="font-size:10px;color:#736e63">ผู้รับผิดชอบ</span>
+                  <span style="font-size:12px;color:#cabfa9">{{ p.owner }}</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;background:{{ p.dispatchBg }}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ p.dispatchColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L4 14 h7 l-1 8 9-12 h-7 z"></path></svg>
+                <span style="font-size:11px;color:{{ p.dispatchColor }};line-height:1.35">{{ p.dispatchLabel }}</span>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button onClick="{{ p.onEdit }}" style="flex:1;padding:8px;border-radius:7px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:12px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">แก้ไข</button>
+                <button onClick="{{ p.onClone }}" style="flex:1;padding:8px;border-radius:7px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:12px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">Clone</button>
+                <button onClick="{{ p.onPause }}" style="flex:1;padding:8px;border-radius:7px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:12px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">{{ p.pauseLabel }}</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ WORK ORDERS ============ -->
+      <sc-if value="{{ isWork }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start">
+          <sc-for list="{{ woColumns }}" as="col" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;align-items:center;gap:9px;padding:0 4px">
+                <span style="width:9px;height:9px;border-radius:50%;background:{{ col.color }}"></span>
+                <span style="font-size:12.5px;font-weight:600;color:#e8e2d6">{{ col.th }}</span>
+                <span style="font-size:11px;font-family:'IBM Plex Mono';color:#736e63;background:#211e18;padding:2px 8px;border-radius:20px">{{ col.count }}</span>
+              </div>
+              <sc-for list="{{ col.items }}" as="w" hint-placeholder-count="2">
+                <div onClick="{{ w.onOpen }}" style="background:#211e18;border:1px solid #2b2720;border-left:3px solid {{ col.color }};border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;cursor:pointer" style-hover="background:#26221b;border-color:#3a352c">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-family:'IBM Plex Mono';font-size:11.5px;color:#f97316">{{ w.id }}</span>
+                    <span style="font-size:9.5px;font-family:'IBM Plex Mono';padding:3px 7px;border-radius:5px;color:{{ w.prioColor }};background:{{ w.prioBg }}">{{ w.priority }}</span>
+                  </div>
+                  <span style="font-size:13px;color:#e8e2d6;font-weight:500;line-height:1.3">{{ w.machine }}</span>
+                  <div style="display:flex;flex-direction:column;gap:5px">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92"><span style="color:#5c5648">PM</span><span style="font-family:'IBM Plex Mono'">{{ w.pm }}</span></div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92"><span style="color:#5c5648">กำหนด</span><span style="font-family:'IBM Plex Mono';color:{{ w.dueColor }}">{{ w.due }}</span></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;border-top:1px solid #2b2720;padding-top:9px">
+                    <span style="width:22px;height:22px;border-radius:50%;background:#37322a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#cabfa9">{{ w.avatar }}</span>
+                    <span style="font-size:11.5px;color:#a59f92">{{ w.assignee }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ CALENDAR ============ -->
+      <sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:4px">
+              <button onClick="{{ prevMonth }}" style="width:34px;height:34px;border-radius:8px;border:1px solid #2b2720;background:#211e18;color:#cabfa9;cursor:pointer;font-size:15px" style-hover="background:#26221b">‹</button>
+              <button onClick="{{ nextMonth }}" style="width:34px;height:34px;border-radius:8px;border:1px solid #2b2720;background:#211e18;color:#cabfa9;cursor:pointer;font-size:15px" style-hover="background:#26221b">›</button>
+            </div>
+            <span style="font-size:16px;font-weight:600">{{ monthLabel }}</span>
+            <div style="flex:1"></div>
+            <div style="display:flex;gap:6px">
+              <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e"></span>เสร็จ</span>
+              <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92;margin-left:10px"><span style="width:8px;height:8px;border-radius:50%;background:#3b82f6"></span>กำลังจะถึง</span>
+              <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92;margin-left:10px"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b"></span>วันนี้</span>
+              <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59f92;margin-left:10px"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444"></span>เกินกำหนด</span>
+            </div>
+          </div>
+
+          <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid #2b2720">
+              <sc-for list="{{ weekdays }}" as="wd" hint-placeholder-count="7">
+                <div style="padding:11px;text-align:center;font-size:11px;color:#736e63;font-family:'IBM Plex Mono';font-weight:600">{{ wd }}</div>
+              </sc-for>
+            </div>
+            <sc-for list="{{ weeks }}" as="week" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:repeat(7,1fr)">
+                <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                  <div style="min-height:96px;border-right:1px solid #211e18;border-bottom:1px solid #211e18;padding:7px 8px;display:flex;flex-direction:column;gap:5px;background:{{ d.bg }}">
+                    <span style="font-size:12px;font-family:'IBM Plex Mono';color:{{ d.numColor }};font-weight:{{ d.numWeight }};align-self:flex-start;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:{{ d.numBg }}">{{ d.day }}</span>
+                    <sc-for list="{{ d.events }}" as="ev" hint-placeholder-count="0">
+                      <span style="font-size:9.5px;color:#e8e2d6;background:{{ ev.bg }};border-left:2px solid {{ ev.color }};padding:2px 5px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'IBM Plex Mono'">{{ ev.label }}</span>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ REPORTS ============ -->
+      <sc-if value="{{ isReports }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+          <sc-for list="{{ reports }}" as="r" hint-placeholder-count="8">
+            <div style="background:#211e18;border:1px solid #2b2720;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px" style-hover="border-color:#3a352c">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="width:40px;height:40px;flex:none;border-radius:9px;background:#16140f;border:1px solid #2b2720;display:flex;align-items:center;justify-content:center">{{ r.icon }}</span>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <span style="font-size:13.5px;font-weight:600;color:#e8e2d6">{{ r.en }}</span>
+                  <span style="font-size:11.5px;color:#736e63">{{ r.th }}</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span style="font-family:'IBM Plex Mono';font-size:22px;font-weight:600;color:{{ r.statColor }}">{{ r.stat }}</span>
+                <span style="font-size:11px;color:#736e63">{{ r.statLabel }}</span>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:auto">
+                <button onClick="{{ onExport }}" style="flex:1;padding:8px;border-radius:7px;border:1px solid #22c55e44;background:#22c55e14;color:#4ade80;font-size:12px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#22c55e22">⤒ Excel</button>
+                <button onClick="{{ onExport }}" style="flex:1;padding:8px;border-radius:7px;border:1px solid #ef444444;background:#ef444414;color:#f87171;font-size:12px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#ef444422">⤒ PDF</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ============ WORK ORDER DRAWER ============ -->
+  <sc-if value="{{ woOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeWo }}" style="position:fixed;inset:0;background:rgba(10,9,6,.6);backdrop-filter:blur(2px);z-index:40"></div>
+    <div style="position:fixed;top:0;right:0;height:100vh;width:430px;background:#1b1813;border-left:1px solid #2b2720;z-index:50;display:flex;flex-direction:column;animation:drawerin .22s ease;box-shadow:-12px 0 40px rgba(0,0,0,.4)">
+      <div style="padding:18px 22px;border-bottom:1px solid #2b2720;display:flex;align-items:flex-start;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="font-family:'IBM Plex Mono';font-size:14px;color:#f97316;font-weight:600">{{ currentWo.id }}</span>
+            <span style="font-size:10px;font-family:'IBM Plex Mono';padding:3px 9px;border-radius:6px;color:{{ currentWo.statusColor }};background:{{ currentWo.statusBg }}">{{ currentWo.statusLabel }}</span>
+          </div>
+          <span style="font-size:15px;font-weight:600;color:#f5f1e8">{{ currentWo.machine }}</span>
+        </div>
+        <button onClick="{{ closeWo }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#a59f92;cursor:pointer;font-size:16px" style-hover="background:#26221b">✕</button>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:10.5px;color:#736e63">PM Number</span><span style="font-size:12.5px;font-family:'IBM Plex Mono';color:#cabfa9">{{ currentWo.pm }}</span></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:10.5px;color:#736e63">กำหนดเสร็จ</span><span style="font-size:12.5px;font-family:'IBM Plex Mono';color:{{ currentWo.dueColor }}">{{ currentWo.due }}</span></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:10.5px;color:#736e63">ผู้รับผิดชอบ</span><span style="font-size:12.5px;color:#cabfa9">{{ currentWo.assignee }}</span></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:10.5px;color:#736e63">ความสำคัญ</span><span style="font-size:12.5px;color:{{ currentWo.prioColor }}">{{ currentWo.priority }}</span></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;font-weight:600">Checklist การตรวจสอบ</span>
+            <span style="font-size:11px;font-family:'IBM Plex Mono';color:#f97316">{{ checkProgress }}</span>
+          </div>
+          <sc-for list="{{ currentChecklist }}" as="c" hint-placeholder-count="5">
+            <button onClick="{{ c.onToggle }}" style="display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;border:1px solid #2b2720;background:#211e18;cursor:pointer;text-align:left;width:100%" style-hover="background:#26221b">
+              <span style="width:20px;height:20px;flex:none;border-radius:6px;border:2px solid {{ c.boxBorder }};background:{{ c.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">{{ c.tick }}</span>
+              <span style="font-size:12.5px;color:{{ c.textColor }};text-decoration:{{ c.deco }}">{{ c.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <span style="font-size:13px;font-weight:600">รูปภาพ Before / After</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <label style="aspect-ratio:1;border-radius:10px;border:1.5px dashed #37322a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1b16" style-hover="border-color:#f97316">
+              <input type="file" accept="image/*" onChange="{{ onPhotoBefore }}" style="display:none"></input>
+              <sc-if value="{{ beforeHas }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background-position:center;background-size:cover;background-image:url('{{ beforeSrc }}')"></div>
+              </sc-if>
+              <sc-if value="{{ beforeEmpty }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c5648" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-5-5L5 21"></path></svg>
+                  <span style="font-size:10.5px;color:#5c5648;font-family:'IBM Plex Mono'">BEFORE · แตะเพิ่มรูป</span>
+                </div>
+              </sc-if>
+              <span style="position:absolute;top:7px;left:8px;font-size:9px;font-family:'IBM Plex Mono';color:#cabfa9;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:5px">BEFORE</span>
+            </label>
+            <label style="aspect-ratio:1;border-radius:10px;border:1.5px dashed #37322a;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1b16" style-hover="border-color:#f97316">
+              <input type="file" accept="image/*" onChange="{{ onPhotoAfter }}" style="display:none"></input>
+              <sc-if value="{{ afterHas }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background-position:center;background-size:cover;background-image:url('{{ afterSrc }}')"></div>
+              </sc-if>
+              <sc-if value="{{ afterEmpty }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c5648" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-5-5L5 21"></path></svg>
+                  <span style="font-size:10.5px;color:#5c5648;font-family:'IBM Plex Mono'">AFTER · แตะเพิ่มรูป</span>
+                </div>
+              </sc-if>
+              <span style="position:absolute;top:7px;left:8px;font-size:9px;font-family:'IBM Plex Mono';color:#cabfa9;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:5px">AFTER</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:13px;font-weight:600">ความคิดเห็น / บันทึก</span>
+            <span style="font-size:11px;font-family:'IBM Plex Mono';color:#736e63;background:#211e18;padding:2px 8px;border-radius:20px">{{ currentComments.length }}</span>
+          </div>
+          <sc-if value="{{ noComments }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:12px;color:#5c5648;padding:4px 0">ยังไม่มีความคิดเห็น — เพิ่มเป็นคนแรก</span>
+          </sc-if>
+          <sc-for list="{{ currentComments }}" as="c" hint-placeholder-count="0">
+            <div style="display:flex;gap:10px">
+              <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#37322a;display:flex;align-items:center;justify-content:center;font-size:11px;color:#cabfa9;font-weight:600">{{ c.initials }}</span>
+              <div style="display:flex;flex-direction:column;gap:4px;background:#211e18;border:1px solid #2b2720;border-radius:9px;padding:9px 12px;flex:1;min-width:0">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+                  <span style="font-size:12px;font-weight:500;color:#e8e2d6">{{ c.author }}</span>
+                  <span style="font-size:10px;color:#736e63;font-family:'IBM Plex Mono';white-space:nowrap">{{ c.time }}</span>
+                </div>
+                <span style="font-size:12.5px;color:#cabfa9;line-height:1.4">{{ c.text }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:9px;align-items:center">
+            <input value="{{ commentDraft }}" onInput="{{ onCommentInput }}" placeholder="เพิ่มความคิดเห็น..." style="flex:1;padding:10px 13px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none"></input>
+            <button onClick="{{ addComment }}" style="padding:10px 18px;border-radius:9px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer;flex:none" style-hover="filter:brightness(1.08)">ส่ง</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:16px 22px;border-top:1px solid #2b2720;display:flex;gap:10px">
+        <button style="flex:1;padding:11px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:13px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">บันทึกร่าง</button>
+        <button style="flex:1.5;padding:11px;border-radius:9px;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="filter:brightness(1.08)">✓ ปิดงาน PM</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ CREATE PM MODAL ============ -->
+  <sc-if value="{{ isPmModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(10,9,6,.62);backdrop-filter:blur(2px);z-index:60"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:560px;max-width:92vw;max-height:90vh;overflow-y:auto;background:#1b1813;border:1px solid #2b2720;border-radius:14px;z-index:70;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="padding:18px 22px;border-bottom:1px solid #2b2720;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:600">{{ pmModalTitle }}</span><span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono'">{{ pmModalSub }}</span></div>
+        <button onClick="{{ closeModal }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#a59f92;cursor:pointer;font-size:16px" style-hover="background:#26221b">✕</button>
+      </div>
+      <div style="padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">PM Number</span><input value="{{ form.pmNo }}" onInput="{{ fh.pmNo }}" placeholder="PM-XX-000" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">เครื่องจักร</span><select value="{{ form.pmMachine }}" onChange="{{ fh.pmMachine }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="">เลือกเครื่องจักร</option><sc-for list="{{ machineCodes }}" as="mc" hint-placeholder-count="0"><option value="{{ mc.name }}">{{ mc.label }}</option></sc-for></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">แผนก / ระบบ</span><select value="{{ form.pmDept }}" onChange="{{ fh.pmDept }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="Electrical">Electrical · ไฟฟ้า</option><option value="Mechanical">Mechanical · เครื่องกล</option><option value="Water System">Water System · ระบบน้ำ</option><option value="Safety">Safety · ความปลอดภัย</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">ความถี่ PM</span><select value="{{ form.pmFreq }}" onChange="{{ fh.pmFreq }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="รายวัน">รายวัน · Daily</option><option value="รายสัปดาห์">รายสัปดาห์ · Weekly</option><option value="รายเดือน">รายเดือน · Monthly</option><option value="รายไตรมาส">รายไตรมาส · Quarterly</option><option value="รายปี">รายปี · Yearly</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">วันที่ครบกำหนด</span><input type="date" value="{{ form.pmStart }}" onInput="{{ fh.pmStart }}" style="padding:9px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%;color-scheme:dark"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">ความสำคัญ</span><select value="{{ form.pmPrio }}" onChange="{{ fh.pmPrio }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="High">High · สูง</option><option value="Medium">Medium · กลาง</option><option value="Low">Low · ต่ำ</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;grid-column:1 / -1"><span style="font-size:11px;color:#a59f92">ผู้รับผิดชอบ</span><input value="{{ form.pmOwner }}" onInput="{{ fh.pmOwner }}" placeholder="ชื่อผู้รับผิดชอบ" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px;grid-column:1 / -1"><span style="font-size:11px;color:#a59f92">รายละเอียดงานที่ต้องทำ</span><textarea value="{{ form.pmDesc }}" onInput="{{ fh.pmDesc }}" placeholder="ระบุขั้นตอน / รายละเอียดงาน PM ที่ต้องดำเนินการ..." rows="3" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%;resize:vertical;line-height:1.45"></textarea></label>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid #2b2720;display:flex;gap:10px;justify-content:flex-end">
+        <button onClick="{{ closeModal }}" style="padding:10px 18px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:13px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">ยกเลิก</button>
+        <button onClick="{{ savePm }}" style="padding:10px 22px;border-radius:9px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="filter:brightness(1.08)">{{ pmSaveLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ ADD MACHINE MODAL ============ -->
+  <sc-if value="{{ isMachineModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(10,9,6,.62);backdrop-filter:blur(2px);z-index:60"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:560px;max-width:92vw;max-height:90vh;overflow-y:auto;background:#1b1813;border:1px solid #2b2720;border-radius:14px;z-index:70;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="padding:18px 22px;border-bottom:1px solid #2b2720;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:600">เพิ่มเครื่องจักรใหม่</span><span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono'">ADD NEW MACHINE</span></div>
+        <button onClick="{{ closeModal }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#a59f92;cursor:pointer;font-size:16px" style-hover="background:#26221b">✕</button>
+      </div>
+      <div style="padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">รหัสเครื่องจักร</span><input value="{{ form.mCode }}" onInput="{{ fh.mCode }}" placeholder="เช่น TR-03" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">ชื่อเครื่องจักร</span><input value="{{ form.mName }}" onInput="{{ fh.mName }}" placeholder="ชื่อเครื่องจักร" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">แผนก / ระบบ</span><select value="{{ form.mDept }}" onChange="{{ fh.mDept }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="Electrical">Electrical · ไฟฟ้า</option><option value="Mechanical">Mechanical · เครื่องกล</option><option value="Water System">Water System · ระบบน้ำ</option><option value="Safety">Safety · ความปลอดภัย</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">พื้นที่ / Location</span><input value="{{ form.mArea }}" onInput="{{ fh.mArea }}" placeholder="เช่น Substation A" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">รุ่น / Model</span><input value="{{ form.mModel }}" onInput="{{ fh.mModel }}" placeholder="ผู้ผลิต / รุ่น" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"></input></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;color:#a59f92">สถานะ</span><select value="{{ form.mStatus }}" onChange="{{ fh.mStatus }}" style="padding:10px 12px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#f5f1e8;font-family:'IBM Plex Sans Thai';font-size:13px;outline:none;width:100%"><option value="Running">Running · ทำงาน</option><option value="Maintenance">Maintenance · ซ่อมบำรุง</option><option value="Stopped">Stopped · หยุด</option><option value="Standby">Standby · สำรอง</option></select></label>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid #2b2720;display:flex;gap:10px;justify-content:flex-end">
+        <button onClick="{{ closeModal }}" style="padding:10px 18px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:13px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">ยกเลิก</button>
+        <button onClick="{{ saveMachine }}" style="padding:10px 22px;border-radius:9px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="filter:brightness(1.08)">เพิ่มเครื่องจักร</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ IMPORT EXCEL MODAL ============ -->
+  <sc-if value="{{ isImportModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(10,9,6,.62);backdrop-filter:blur(2px);z-index:60"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;max-width:92vw;background:#1b1813;border:1px solid #2b2720;border-radius:14px;z-index:70;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="padding:18px 22px;border-bottom:1px solid #2b2720;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:600">นำเข้าข้อมูลจาก Excel</span><span style="font-size:11px;color:#736e63;font-family:'IBM Plex Mono'">IMPORT FROM EXCEL</span></div>
+        <button onClick="{{ closeModal }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #2b2720;background:#16140f;color:#a59f92;cursor:pointer;font-size:16px" style-hover="background:#26221b">✕</button>
+      </div>
+      <div style="padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="border:1.5px dashed #37322a;border-radius:12px;padding:34px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;background:repeating-linear-gradient(45deg,#1e1b16,#1e1b16 8px,#211e18 8px,#211e18 16px);cursor:pointer" style-hover="border-color:#f97316">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg>
+          <span style="font-size:13px;color:#cabfa9">ลากไฟล์ Excel มาวาง หรือ คลิกเพื่อเลือก</span>
+          <span style="font-size:11px;color:#5c5648;font-family:'IBM Plex Mono'">.xlsx, .xls · สูงสุด 10MB</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#f97316;cursor:pointer"><span>⤓</span><span>ดาวน์โหลดเทมเพลตมาตรฐาน (Template.xlsx)</span></div>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid #2b2720;display:flex;gap:10px;justify-content:flex-end">
+        <button onClick="{{ closeModal }}" style="padding:10px 18px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:13px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">ยกเลิก</button>
+        <button onClick="{{ importDo }}" style="padding:10px 22px;border-radius:9px;border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="filter:brightness(1.08)">นำเข้าข้อมูล</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ DELETE CONFIRM MODAL ============ -->
+  <sc-if value="{{ isDelModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ cancelDelete }}" style="position:fixed;inset:0;background:rgba(10,9,6,.62);backdrop-filter:blur(2px);z-index:80"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;max-width:92vw;background:#1b1813;border:1px solid #2b2720;border-radius:14px;z-index:85;box-shadow:0 20px 60px rgba(0,0,0,.5);padding:24px 24px 20px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+        <span style="width:52px;height:52px;border-radius:50%;background:#ef444418;border:1px solid #ef444455;display:flex;align-items:center;justify-content:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path></svg>
+        </span>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-size:15.5px;font-weight:600;color:#f5f1e8">ยืนยันการลบเครื่องจักร?</span>
+          <span style="font-size:12.5px;color:#a59f92;line-height:1.5">ต้องการลบ <span style="color:#f97316;font-family:'IBM Plex Mono'">{{ delTarget.code }}</span> · {{ delTarget.name }}<br>การกระทำนี้ไม่สามารถย้อนกลับได้</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button onClick="{{ cancelDelete }}" style="flex:1;padding:11px;border-radius:9px;border:1px solid #2b2720;background:#16140f;color:#cabfa9;font-size:13px;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="background:#26221b">ยกเลิก</button>
+        <button onClick="{{ confirmDelete }}" style="flex:1;padding:11px;border-radius:9px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai';cursor:pointer" style-hover="filter:brightness(1.08)">ลบเครื่องจักร</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ TOAST ============ -->
+  <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:90;display:flex;align-items:center;gap:11px;background:#211e18;border:1px solid #37322a;border-left:3px solid #22c55e;border-radius:10px;padding:13px 18px;box-shadow:0 12px 40px rgba(0,0,0,.5)">
+      <span style="width:22px;height:22px;flex:none;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px">✓</span>
+      <span style="font-size:13px;color:#e8e2d6">{{ toast }}</span>
+    </div>
+  </sc-if>
+
+</div>
+
+<template id="__bundler_thumbnail" data-bg-color="#16140f">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#16140f"></rect>
+    <circle cx="600" cy="330" r="120" fill="none" stroke="#2b2720" stroke-width="26"></circle>
+    <path d="M600 210 a120 120 0 0 1 104 180" fill="none" stroke="#f97316" stroke-width="26" stroke-linecap="round"></path>
+    <text x="600" y="350" font-family="monospace" font-size="96" font-weight="700" fill="#f5f1e8" text-anchor="middle">PM</text>
+    <text x="600" y="540" font-family="sans-serif" font-size="52" font-weight="700" fill="#f5f1e8" text-anchor="middle">เกษตรชล 2559</text>
+    <text x="600" y="600" font-family="monospace" font-size="28" fill="#736e63" text-anchor="middle" letter-spacing="4">PM MASTER SYSTEM</text>
+  </svg>
+</template></x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  PERSIST_KEYS=['extraMachines','extraPlans','deletedMachines','planOverrides','dispatched','photos','comments','checks'];
+
+  thMon={'ม.ค.':0,'ก.พ.':1,'มี.ค.':2,'เม.ย.':3,'พ.ค.':4,'มิ.ย.':5,'ก.ค.':6,'ส.ค.':7,'ก.ย.':8,'ต.ค.':9,'พ.ย.':10,'ธ.ค.':11};
+  thMonShort=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+  parseDue(str){
+    if(!str||str==='-') return null;
+    if(/^\d{4}-\d{2}-\d{2}/.test(str)){ const p=str.slice(0,10).split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+    const parts=str.trim().split(/\s+/);
+    if(parts.length>=3){ const d=parseInt(parts[0]); const m=this.thMon[parts[1]]; let y=parseInt(parts[2]); if(y>2400)y-=543; if(!isNaN(d)&&m!=null&&!isNaN(y)) return new Date(y,m,d); }
+    return null;
+  }
+  daysUntil(str){ const due=this.parseDue(str); if(!due)return null; const t=new Date(); t.setHours(0,0,0,0); return Math.round((due-t)/86400000); }
+  fmtThai(d){ if(!d)return '-'; return d.getDate()+' '+this.thMonShort[d.getMonth()]+' '+(d.getFullYear()+543); }
+
+  openEditPlan(p){
+    const due=this.parseDue(p.due);
+    const iso=due?(due.getFullYear()+'-'+String(due.getMonth()+1).padStart(2,'0')+'-'+String(due.getDate()).padStart(2,'0')):'';
+    this.setState({modal:'pm',editingPlan:p.no,form:{pmNo:p.no,pmMachine:p.machine,pmDept:p.dept,pmFreq:p.freq,pmStart:iso,pmPrio:p.priority,pmOwner:p.owner,pmDesc:p.desc}});
+  }
+  clonePlan(p){
+    const newNo=p.no+'-C'+Math.floor(Math.random()*90+10);
+    const raw=[newNo,p.machine+' (สำเนา)',p.dept,p.freq,p.due,p.priority,0,p.owner,false,p.desc];
+    this.setState(st=>({extraPlans:[raw,...st.extraPlans]}));
+    this.toastMsg('คัดลอกแผนเป็น '+newNo+' แล้ว');
+  }
+  togglePause(no){
+    this.setState(st=>{const ov={...st.planOverrides};const cur={...(ov[no]||{})};cur.paused=!cur.paused;ov[no]=cur;return{planOverrides:ov};},()=>{
+      const paused=(this.state.planOverrides[no]||{}).paused;
+      this.toastMsg(paused?('พักแผน '+no+' แล้ว · หยุดส่งใบสั่งงาน'):('เปิดใช้แผน '+no+' แล้ว'));
+    });
+  }
+
+  state = (()=>{
+    const base = { screen:'dashboard', q:'', cal:{y:2026,m:5}, openWo:null, checks:{}, modal:null, form:{}, toast:null, extraMachines:[], extraPlans:[], deletedMachines:[], planOverrides:{}, dispatched:{}, editingPlan:null, photos:{}, comments:{}, commentDraft:'', delTarget:null };
+    try{ const saved=JSON.parse(localStorage.getItem('pmsys_v1')||'{}'); Object.assign(base, saved); }catch(e){}
+    return base;
+  })();
+
+  componentDidUpdate(){
+    try{
+      const out={}; this.PERSIST_KEYS.forEach(k=>{ out[k]=this.state[k]; });
+      localStorage.setItem('pmsys_v1', JSON.stringify(out));
+    }catch(e){}
+  }
+
+  icon(children){
+    return React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round'},children);
+  }
+  p(d,k){ return React.createElement('path',{d:d,key:k||d}); }
+  r(x,y,w,h,k){ return React.createElement('rect',{x:x,y:y,width:w,height:h,rx:1.7,key:k||(''+x+y)}); }
+
+  toastMsg(msg){ this.setState({toast:msg}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:null}),2600); }
+
+  nowLabel(){ const d=new Date(); const hh=(''+d.getHours()).padStart(2,'0'); const mm=(''+d.getMinutes()).padStart(2,'0'); return 'วันนี้ '+hh+':'+mm+' น.'; }
+
+  navIcon(key){
+    if(key==='dashboard') return this.icon([this.r(3,3,7,7,'a'),this.r(14,3,7,7,'b'),this.r(14,14,7,7,'c'),this.r(3,14,7,7,'d')]);
+    if(key==='machines') return this.icon([this.p('M12 2.5 L20.5 7 V17 L12 21.5 L3.5 17 V7 Z','a'),this.p('M3.5 7 L12 11.5 L20.5 7','b'),this.p('M12 11.5 V21.5','c')]);
+    if(key==='plans') return this.icon([React.createElement('rect',{x:5,y:4,width:14,height:17,rx:2,key:'r'}),this.p('M9 4 H15 V6.5 H9 Z','t'),this.p('M8.5 10 H15.5','a'),this.p('M8.5 14 H15.5','b'),this.p('M8.5 18 H13','c')]);
+    if(key==='workorders') return this.icon([this.p('M6 3 H14 L19 8 V21 H6 Z','a'),this.p('M14 3 V8 H19','b'),this.p('M8.5 14 l2 2 l4 -4','c')]);
+    if(key==='calendar') return this.icon([React.createElement('rect',{x:3,y:5,width:18,height:16,rx:2,key:'r'}),this.p('M3 9.5 H21','a'),this.p('M8 3 V6','b'),this.p('M16 3 V6','c')]);
+    if(key==='reports') return this.icon([this.p('M4 20 V11','a'),this.p('M10 20 V4','b'),this.p('M16 20 V14','c'),this.p('M3 20.5 H21','d')]);
+    return null;
+  }
+
+  machineMeta(){
+    const c={Running:'#22c55e',Maintenance:'#f59e0b',Stopped:'#ef4444',Standby:'#3b82f6'};
+    return [
+      ['TR-01','หม้อแปลงไฟฟ้า 1250kVA','Electrical','Substation A','ABB RESIBLOC','Running'],
+      ['TR-02','หม้อแปลงไฟฟ้า 800kVA','Electrical','Substation B','Siemens GEAFOL','Running'],
+      ['MP-101','มอเตอร์ปั๊มหลัก','Mechanical','Pump Room','WEG W22','Running'],
+      ['P-102','ปั๊มน้ำหล่อเย็น','Water System','Cooling','Grundfos CR-64','Maintenance'],
+      ['CP-201','คอมเพรสเซอร์อากาศ','Mechanical','Utility','Atlas Copco GA-75','Running'],
+      ['CH-301','เครื่องทำน้ำเย็น Chiller','Water System','Chiller Plant','Carrier 30XA','Running'],
+      ['SF-401','ระบบ Softener','Water System','Water Treatment','Pentair','Stopped'],
+      ['CV-501','สายพานลำเลียง','Mechanical','Production 1','Custom','Running'],
+      ['GEN-01','เครื่องกำเนิดไฟฟ้าสำรอง','Electrical','Generator','Cummins C1100','Standby'],
+      ['AHU-02','เครื่องส่งลมเย็น','Mechanical','HVAC','Daikin','Running'],
+      ['BL-701','โบลเวอร์','Mechanical','Production 2','Custom','Running'],
+      ['PMP-08','ปั๊มดับเพลิง','Safety','Fire Pump','Grundfos','Standby']
+    ].map(m=>({code:m[0],name:m[1],dept:m[2],area:m[3],model:m[4],status:m[5],statusColor:c[m[5]],statusBg:c[m[5]]+'22'}));
+  }
+
+  woData(){
+    const cl={
+      Electrical:['ตรวจสายไฟและจุดต่อสาย','วัดอุณหภูมิจุดเชื่อมต่อ','ตรวจค่าความเป็นฉนวน (Insulation)','ตรวจระดับโหลดและกระแส','ทำความสะอาดตู้ควบคุม'],
+      Mechanical:['ตรวจลูกปืนและการสั่นสะเทือน','ตรวจสายพานและความตึง','ตรวจการหล่อลื่น','ตรวจเสียงผิดปกติ','ขันแน่นจุดยึด'],
+      Water:['ตรวจปั๊มน้ำและแรงดัน','ตรวจคุณภาพน้ำ','ตรวจวาล์วและท่อ','ตรวจการรั่วซึม'],
+    };
+    const prio={High:'#ef4444',Medium:'#f59e0b',Low:'#3b82f6'};
+    const raw=[
+      ['WO-2406-019','TR-01 หม้อแปลงไฟฟ้า','PM-EL-001','22 มิ.ย. 2569','สมชาย ก.','สก','High','Electrical','overdue'],
+      ['WO-2406-018','SF-401 ระบบ Softener','PM-WT-009','20 มิ.ย. 2569','อนุชา ป.','อป','High','Water','overdue'],
+      ['WO-2406-021','P-102 ปั๊มน้ำหล่อเย็น','PM-WT-003','23 มิ.ย. 2569','อนุชา ป.','อป','Medium','Water','pending'],
+      ['WO-2406-022','CP-201 คอมเพรสเซอร์','PM-ME-014','25 มิ.ย. 2569','วิชัย ส.','วช','Medium','Mechanical','pending'],
+      ['WO-2406-015','CV-501 สายพานลำเลียง','PM-ME-007','21 มิ.ย. 2569','กิตติ ม.','กต','Low','Mechanical','progress'],
+      ['WO-2406-016','AHU-02 เครื่องส่งลมเย็น','PM-ME-031','22 มิ.ย. 2569','กิตติ ม.','กต','Medium','Mechanical','progress'],
+      ['WO-2406-010','TR-02 หม้อแปลงไฟฟ้า','PM-EL-002','19 มิ.ย. 2569','สมชาย ก.','สก','High','Electrical','completed'],
+      ['WO-2406-011','CH-301 Chiller','PM-WT-005','18 มิ.ย. 2569','อนุชา ป.','อป','Medium','Water','completed'],
+      ['WO-2406-012','MP-101 มอเตอร์ปั๊มหลัก','PM-ME-002','18 มิ.ย. 2569','วิชัย ส.','วช','Low','Mechanical','completed']
+    ];
+    return raw.map(w=>({
+      id:w[0],machine:w[1],pm:w[2],due:w[3],assignee:w[4],avatar:w[5],priority:w[6],dept:w[7],status:w[8],
+      prioColor:prio[w[6]],prioBg:prio[w[6]]+'22',
+      checklist:cl[w[7]]||cl.Mechanical
+    }));
+  }
+
+  thMonths=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  enMonths=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  buildCalendar(){
+    const {y,m}=this.state.cal;
+    const first=new Date(y,m,1);
+    const startDay=(first.getDay()+6)%7;
+    const daysInMonth=new Date(y,m+1,0).getDate();
+    const prevDays=new Date(y,m,0).getDate();
+    const evByDay={
+      3:[{label:'PM CP-201',color:'#3b82f6'}],
+      8:[{label:'PM CH-301',color:'#22c55e'}],
+      12:[{label:'PM MP-101',color:'#3b82f6'}],
+      18:[{label:'PM TR-02',color:'#22c55e'},{label:'PM CH-301',color:'#22c55e'}],
+      20:[{label:'PM SF-401',color:'#ef4444'}],
+      22:[{label:'PM TR-01',color:'#f59e0b'},{label:'PM AHU-02',color:'#f59e0b'}],
+      23:[{label:'PM CV-501',color:'#3b82f6'},{label:'PM P-102',color:'#3b82f6'}],
+      25:[{label:'PM CP-201',color:'#3b82f6'}],
+      28:[{label:'PM BL-701',color:'#3b82f6'}]
+    };
+    const isJune=(y===2026&&m===5);
+    const cells=[];
+    for(let i=0;i<42;i++){
+      let day,inMonth;
+      if(i<startDay){ day=prevDays-startDay+1+i; inMonth=false; }
+      else if(i<startDay+daysInMonth){ day=i-startDay+1; inMonth=true; }
+      else { day=i-startDay-daysInMonth+1; inMonth=false; }
+      const today=isJune&&inMonth&&day===22;
+      const events=inMonth?(evByDay[day]||[]).map(e=>({label:e.label,color:e.color,bg:e.color+'1f'})):[];
+      cells.push({
+        day:day, inMonth:inMonth, events:events,
+        bg: inMonth?'transparent':'#1c1914',
+        numColor: today?'#fff':(inMonth?'#cabfa9':'#4a443a'),
+        numWeight: today?'600':'400',
+        numBg: today?'#f59e0b':'transparent'
+      });
+    }
+    const weeks=[];
+    for(let i=0;i<6;i++) weeks.push(cells.slice(i*7,i*7+7));
+    return { weeks:weeks, label:this.thMonths[m]+' '+(y+543)+'  /  '+this.enMonths[m]+' '+y };
+  }
+
+  renderVals(){
+    const s=this.state;
+    const nav=[
+      {key:'dashboard',th:'แดชบอร์ด',en:'Dashboard'},
+      {key:'machines',th:'เครื่องจักร',en:'Machines'},
+      {key:'plans',th:'แผน PM',en:'PM Plans'},
+      {key:'workorders',th:'ใบสั่งงาน',en:'Work Orders',badge:'9'},
+      {key:'calendar',th:'ปฏิทิน',en:'Calendar'},
+      {key:'reports',th:'รายงาน',en:'Reports'}
+    ];
+    const navItems=nav.map(n=>{
+      const active=s.screen===n.key;
+      return {
+        th:n.th, icon:this.navIcon(n.key),
+        badge:n.badge, 
+        badgeStyle:'font-size:10px;font-family:IBM Plex Mono;background:#ef444422;color:#f87171;padding:1px 7px;border-radius:20px',
+        onClick:()=>this.setState({screen:n.key,openWo:null}),
+        style:'display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;border:none;cursor:pointer;width:100%;font-family:IBM Plex Sans Thai;transition:background .12s;'+
+          (active?'background:#f973161f;color:#fb923c;':'background:transparent;color:#a59f92;')
+      };
+    });
+
+    const titles={
+      dashboard:['แดชบอร์ด','DASHBOARD · ภาพรวมระบบ'],
+      machines:['จัดการเครื่องจักร','MACHINE MANAGEMENT'],
+      plans:['แผนบำรุงรักษา PM','PREVENTIVE MAINTENANCE PLANS'],
+      workorders:['ใบสั่งงาน Work Order','WORK ORDERS · KANBAN'],
+      calendar:['ปฏิทิน PM','PM CALENDAR'],
+      reports:['รายงาน','REPORTS & EXPORT']
+    };
+
+    const kpis=[
+      {th:'เครื่องจักรทั้งหมด',en:'TOTAL MACHINES',val:'325',unit:'เครื่อง',color:'#a59f92'},
+      {th:'PM วันนี้',en:'PM TODAY',val:'12',unit:'งาน',color:'#f97316'},
+      {th:'เสร็จแล้ว',en:'COMPLETED',val:'8',unit:'งาน',color:'#22c55e'},
+      {th:'งานค้าง',en:'PENDING',val:'4',unit:'งาน',color:'#3b82f6'},
+      {th:'เกินกำหนด',en:'OVERDUE',val:'2',unit:'งาน',color:'#ef4444'},
+      {th:'อัตราสำเร็จ PM',en:'COMPLETION',val:'96%',unit:'',color:'#f97316'}
+    ];
+
+    const tvals=[78,84,80,88,91,86,94,90,96,89,93,87];
+    const tlab=['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
+    const trend=tvals.map((v,i)=>({m:tlab[i],h:Math.round(v*1.35)}));
+
+    const breakdown=[
+      {label:'ไฟฟ้า · Electrical',pct:34,pctLabel:'34%',color:'#f97316'},
+      {label:'เครื่องกล · Mechanical',pct:28,pctLabel:'28%',color:'#3b82f6'},
+      {label:'ระบบน้ำ · Water',pct:21,pctLabel:'21%',color:'#22c55e'},
+      {label:'อื่นๆ · Others',pct:17,pctLabel:'17%',color:'#a59f92'}
+    ];
+
+    const alerts=[
+      {dot:'#ef4444',th:'PM หม้อแปลง TR-01 ครบกำหนดวันนี้',meta:'PM-EL-001 · สมชาย ก.'},
+      {dot:'#f59e0b',th:'PM ปั๊มน้ำ P-102 เหลืออีก 1 วัน',meta:'PM-WT-003 · อนุชา ป.'},
+      {dot:'#ef4444',th:'PM ระบบ Softener เกินกำหนด 2 วัน',meta:'PM-WT-009 · อนุชา ป.'},
+      {dot:'#3b82f6',th:'PM คอมเพรสเซอร์ CP-201 เหลืออีก 3 วัน',meta:'PM-ME-014 · วิชัย ส.'}
+    ];
+
+    const q=(s.q||'').toLowerCase();
+    const cmap={Running:'#22c55e',Maintenance:'#f59e0b',Stopped:'#ef4444',Standby:'#3b82f6'};
+    const extraM=(s.extraMachines||[]).map(m=>Object.assign({},m,{statusColor:cmap[m.status]||'#a59f92',statusBg:(cmap[m.status]||'#a59f92')+'22'}));
+    const deleted=s.deletedMachines||[];
+    const combinedM=[...extraM,...this.machineMeta()].filter(m=>deleted.indexOf(m.code)<0);
+    const filteredMachines=combinedM.filter(m=>!q||(m.code+m.name+m.dept+m.area).toLowerCase().indexOf(q)>=0)
+      .map(m=>Object.assign({},m,{onDelete:(e)=>{e.stopPropagation();this.setState({delTarget:{code:m.code,name:m.name}});}}));
+
+    const prio={High:'#ef4444',Medium:'#f59e0b',Low:'#3b82f6'};
+    const planBase=[
+      ['PM-EL-001','หม้อแปลง TR-01','Electrical','รายเดือน','22 มิ.ย. 2569','High',60,'สมชาย ก.',false],
+      ['PM-ME-014','คอมเพรสเซอร์ CP-201','Mechanical','รายสัปดาห์','25 มิ.ย. 2569','Medium',30,'วิชัย ส.',false],
+      ['PM-WT-003','ปั๊มน้ำ P-102','Water System','รายไตรมาส','23 มิ.ย. 2569','High',0,'อนุชา ป.',false],
+      ['PM-ME-007','สายพาน CV-501','Mechanical','รายวัน','23 มิ.ย. 2569','Low',80,'กิตติ ม.',false],
+      ['PM-WT-009','ระบบ Softener SF-401','Water System','รายเดือน','20 มิ.ย. 2569','High',0,'อนุชา ป.',true],
+      ['PM-EL-022','เครื่องกำเนิดไฟฟ้า GEN-01','Electrical','รายปี','15 ก.ย. 2569','Medium',10,'สมชาย ก.',false]
+    ];
+    const ov=s.planOverrides||{};
+    const rawPlans=[...(s.extraPlans||[]), ...planBase].map(p=>{
+      const o=ov[p[0]]||{};
+      const machine=o.machine!=null?o.machine:p[1];
+      const dept=o.dept!=null?o.dept:p[2];
+      const freq=o.freq!=null?o.freq:p[3];
+      const due=o.due!=null?o.due:p[4];
+      const priority=o.priority!=null?o.priority:p[5];
+      const owner=o.owner!=null?o.owner:p[7];
+      const desc=o.desc!=null?o.desc:(p[9]||'');
+      const paused=o.paused!=null?o.paused:false;
+      return {no:p[0],machine:machine,dept:dept,freq:freq,due:due,priority:priority,progress:p[6],owner:owner,desc:desc,paused:paused,wasOverdue:p[8]};
+    });
+
+    const allWo=this.woData();
+    const existingPms=allWo.map(w=>w.pm);
+    const avatarOf=(name)=>((name||'').trim().slice(0,2)||'??');
+
+    const plans=rawPlans.map(p=>{
+      const du=this.daysUntil(p.due);
+      const within5=(du!=null && du<=5);
+      const eligible=(!p.paused && within5);
+      const alreadyHasWo=existingPms.indexOf(p.no)>=0;
+      const dispatched=(eligible && (alreadyHasWo || (s.dispatched||{})[p.no]));
+      let dispatchLabel,dispatchColor,dispatchBg;
+      if(p.paused){ dispatchLabel='พักใช้งาน — ไม่ส่งใบสั่งงาน'; dispatchColor='#a59f92'; dispatchBg='#16140f'; }
+      else if(du==null){ dispatchLabel='ยังไม่กำหนดวันที่'; dispatchColor='#a59f92'; dispatchBg='#16140f'; }
+      else if(du<0){ dispatchLabel='เกินกำหนด '+(-du)+' วัน — ส่งใบสั่งงานแล้ว'; dispatchColor='#f87171'; dispatchBg='#ef444414'; }
+      else if(du<=5){ dispatchLabel='ส่งใบสั่งงานอัตโนมัติแล้ว · เหลือ '+du+' วัน'; dispatchColor='#fb923c'; dispatchBg='#f9731614'; }
+      else { dispatchLabel='จะส่งใบสั่งงานเมื่อเหลือ 5 วัน'; dispatchColor='#9ca3af'; dispatchBg='#16140f'; }
+      return Object.assign({},p,{
+        prioColor:prio[p.priority],prioBg:prio[p.priority]+'22',
+        barColor:p.progress>=70?'#22c55e':(p.progress>=30?'#f59e0b':'#3b82f6'),
+        dueColor:(du!=null&&du<0)?'#ef4444':'#cabfa9',
+        hasDesc:!!p.desc,
+        cardOpacity:p.paused?'0.55':'1',
+        pauseLabel:p.paused?'เปิดใช้':'พัก',
+        eligible:eligible, dispatched:dispatched, du:du,
+        dispatchLabel:dispatchLabel, dispatchColor:dispatchColor, dispatchBg:dispatchBg,
+        onEdit:()=>this.openEditPlan(p),
+        onClone:()=>this.clonePlan(p),
+        onPause:()=>this.togglePause(p.no)
+      });
+    });
+
+    // auto-generate work orders for eligible plans not already represented
+    const autoWos=plans.filter(p=>p.eligible && existingPms.indexOf(p.no)<0).map(p=>({
+      id:'WO-AUTO-'+p.no.replace(/[^0-9]/g,'').slice(-4),
+      machine:p.machine, pm:p.no, due:p.due, assignee:p.owner, avatar:avatarOf(p.owner),
+      priority:p.priority, dept:(p.dept.indexOf('Water')>=0?'Water':(p.dept.indexOf('Elect')>=0?'Electrical':'Mechanical')),
+      status:(p.du<0?'overdue':'pending'), auto:true,
+      prioColor:prio[p.priority], prioBg:prio[p.priority]+'22',
+      checklist:['ตรวจสอบทั่วไป','ตรวจการทำงาน','บันทึกผล']
+    }));
+    autoWos.forEach(w=>allWo.unshift(w));
+    allWo.forEach(w=>{ w.dueColor = (w.status==='overdue')?'#ef4444':((w.id==='WO-2406-019')?'#f59e0b':'#cabfa9'); });
+    const colDef=[
+      {key:'pending',th:'รอดำเนินการ',color:'#3b82f6'},
+      {key:'progress',th:'กำลังทำ',color:'#f59e0b'},
+      {key:'completed',th:'เสร็จสิ้น',color:'#22c55e'},
+      {key:'overdue',th:'เกินกำหนด',color:'#ef4444'}
+    ];
+    const woColumns=colDef.map(c=>{
+      const items=allWo.filter(w=>w.status===c.key).map(w=>Object.assign({},w,{onOpen:()=>this.setState({openWo:w.id})}));
+      return {th:c.th,color:c.color,count:items.length,items:items};
+    });
+
+    // current WO drawer
+    const statusMap={pending:['รอดำเนินการ','#3b82f6'],progress:['กำลังทำ','#f59e0b'],completed:['เสร็จสิ้น','#22c55e'],overdue:['เกินกำหนด','#ef4444']};
+    let currentWo={checklist:[],id:'',machine:''}; let woOpen=false; let currentChecklist=[]; let checkProgress='';
+    let beforeSrc='',afterSrc='',beforeHas=false,afterHas=false,currentComments=[];
+    let onPhotoBefore=()=>{},onPhotoAfter=()=>{},addComment=()=>{};
+    if(s.openWo){
+      const w=allWo.find(x=>x.id===s.openWo);
+      if(w){
+        woOpen=true;
+        const sm=statusMap[w.status];
+        currentWo=Object.assign({},w,{statusLabel:sm[0],statusColor:sm[1],statusBg:sm[1]+'22'});
+        const ch=s.checks[w.id]||{};
+        const autoDone=(w.status==='completed');
+        let done=0;
+        currentChecklist=w.checklist.map((label,i)=>{
+          const checked = (i in ch)?ch[i]:autoDone;
+          if(checked) done++;
+          return {
+            label:label,
+            tick:checked?'✓':'',
+            boxBorder:checked?'#22c55e':'#4a443a',
+            boxBg:checked?'#22c55e':'transparent',
+            textColor:checked?'#736e63':'#e8e2d6',
+            deco:checked?'line-through':'none',
+            onToggle:()=>this.setState(st=>{const cs={...st.checks};const cur={...(cs[w.id]||{})};const prev=(i in cur)?cur[i]:autoDone;cur[i]=!prev;cs[w.id]=cur;return {checks:cs};})
+          };
+        });
+        checkProgress=done+' / '+w.checklist.length+' เสร็จ';
+        const id=w.id;
+        const ph=s.photos[id]||{};
+        beforeSrc=ph.before||''; afterSrc=ph.after||''; beforeHas=!!ph.before; afterHas=!!ph.after;
+        const readImg=(kind)=>(e)=>{const file=e.target.files&&e.target.files[0];if(!file)return;const rd=new FileReader();rd.onload=()=>{this.setState(st=>{const p={...st.photos};const cur={...(p[id]||{})};cur[kind]=rd.result;p[id]=cur;return {photos:p};});};rd.readAsDataURL(file);};
+        onPhotoBefore=readImg('before'); onPhotoAfter=readImg('after');
+        currentComments=(s.comments[id]||[]).map(c=>c);
+        addComment=()=>{const t=(this.state.commentDraft||'').trim();if(!t)return;const c={author:'ไมตรี รุ่งเรืองศรี',initials:'มร',text:t,time:this.nowLabel()};this.setState(st=>{const cm={...st.comments};cm[id]=[...(cm[id]||[]),c];return {comments:cm,commentDraft:''};});};
+      }
+    }
+
+    const reports=[
+      ['PM Schedule Report','ตารางแผน PM','156','แผน','#f97316'],
+      ['PM Completion Report','อัตราการทำ PM','96%','สำเร็จ','#22c55e'],
+      ['Overdue Report','งานเกินกำหนด','2','งาน','#ef4444'],
+      ['Machine History Report','ประวัติเครื่องจักร','325','เครื่อง','#3b82f6'],
+      ['Downtime Report','เวลาหยุดเครื่อง','48','ชม./เดือน','#f59e0b'],
+      ['Cost Analysis Report','วิเคราะห์ค่าใช้จ่าย','฿1.2M','/ปี','#f97316'],
+      ['MTBF Report','ค่า Mean Time Between Failure','185','ชม.','#3b82f6'],
+      ['MTTR Report','ค่า Mean Time To Repair','2.3','ชม.','#22c55e']
+    ].map(r=>({en:r[0],th:r[1],stat:r[2],statLabel:r[3],statColor:r[4],
+      icon:this.icon([this.p('M4 20 V11','a'),this.p('M10 20 V4','b'),this.p('M16 20 V14','c'),this.p('M3 20.5 H21','d')])
+    }));
+
+    const cal=this.buildCalendar();
+
+    const machineCodes=combinedM.map(m=>({name:m.name,label:m.code+' · '+m.name}));
+    const setF=(k)=>(e)=>this.setState(st=>({form:{...st.form,[k]:e.target.value}}));
+    const fh={};
+    ['mCode','mName','mDept','mArea','mModel','mStatus','pmNo','pmMachine','pmDept','pmFreq','pmStart','pmPrio','pmOwner','pmDesc'].forEach(k=>{fh[k]=setF(k);});
+
+    return {
+      navItems:navItems,
+      pageTitleTh:titles[s.screen][0], pageTitleEn:titles[s.screen][1],
+      isDashboard:s.screen==='dashboard', isMachines:s.screen==='machines',
+      isPlans:s.screen==='plans', isWork:s.screen==='workorders',
+      isCalendar:s.screen==='calendar', isReports:s.screen==='reports',
+      kpis:kpis, trend:trend, breakdown:breakdown, alerts:alerts,
+      q:s.q, onSearch:(e)=>this.setState({q:e.target.value}),
+      filteredMachines:filteredMachines, machineCount:filteredMachines.length,
+      plans:plans, woColumns:woColumns, reports:reports,
+      weekdays:['จ','อ','พ','พฤ','ศ','ส','อา'], weeks:cal.weeks, monthLabel:cal.label,
+      prevMonth:()=>this.setState(st=>{let{y,m}=st.cal;m--;if(m<0){m=11;y--;}return{cal:{y,m}};}),
+      nextMonth:()=>this.setState(st=>{let{y,m}=st.cal;m++;if(m>11){m=0;y++;}return{cal:{y,m}};}),
+      woOpen:woOpen, currentWo:currentWo, currentChecklist:currentChecklist, checkProgress:checkProgress,
+      beforeSrc:beforeSrc, afterSrc:afterSrc, beforeHas:beforeHas, afterHas:afterHas,
+      beforeEmpty:!beforeHas, afterEmpty:!afterHas,
+      onPhotoBefore:onPhotoBefore, onPhotoAfter:onPhotoAfter,
+      currentComments:currentComments, noComments:currentComments.length===0,
+      commentDraft:s.commentDraft, onCommentInput:(e)=>this.setState({commentDraft:e.target.value}), addComment:addComment,
+      closeWo:()=>this.setState({openWo:null}),
+      isPmModal:s.modal==='pm', isMachineModal:s.modal==='machine', isImportModal:s.modal==='import',
+      form:s.form||{}, fh:fh, machineCodes:machineCodes,
+      toast:s.toast, toastShow:!!s.toast,
+      openPm:()=>this.setState({modal:'pm',form:{pmNo:'',pmMachine:'',pmDept:'Mechanical',pmFreq:'รายเดือน',pmStart:'',pmPrio:'Medium',pmOwner:'',pmDesc:''}}),
+      openMachine:()=>this.setState({modal:'machine',form:{mCode:'',mName:'',mDept:'Mechanical',mArea:'',mModel:'',mStatus:'Running'}}),
+      openImport:()=>this.setState({modal:'import',form:{}}),
+      closeModal:()=>this.setState({modal:null,editingPlan:null}),
+      onExport:()=>this.toastMsg('กำลังส่งออกไฟล์... (Excel / PDF)'),
+      importDo:()=>{this.setState({modal:null});this.toastMsg('นำเข้าข้อมูลจาก Excel สำเร็จ · 24 รายการ');},
+      saveMachine:()=>{const f=this.state.form;const raw={code:f.mCode||'NEW-001',name:f.mName||'เครื่องจักรใหม่',dept:f.mDept||'Mechanical',area:f.mArea||'-',model:f.mModel||'-',status:f.mStatus||'Running'};this.setState(st=>({extraMachines:[raw,...st.extraMachines],modal:null,screen:'machines'}));this.toastMsg('เพิ่มเครื่องจักร '+raw.code+' แล้ว');},
+      savePm:()=>{const f=this.state.form;
+        if(this.state.editingPlan){
+          const no=this.state.editingPlan;
+          const due=f.pmStart?this.fmtThai(this.parseDue(f.pmStart)):null;
+          this.setState(st=>{const ov={...st.planOverrides};const cur={...(ov[no]||{})};
+            cur.machine=f.pmMachine||cur.machine; cur.dept=f.pmDept; cur.freq=f.pmFreq; if(due)cur.due=due; cur.priority=f.pmPrio; cur.owner=f.pmOwner; cur.desc=f.pmDesc||'';
+            ov[no]=cur; return {planOverrides:ov,modal:null,editingPlan:null,screen:'plans'};});
+          this.toastMsg('บันทึกการแก้ไขแผน '+no+' แล้ว'); return;
+        }
+        const due=f.pmStart?this.fmtThai(this.parseDue(f.pmStart)):'-';
+        const raw=[f.pmNo||('PM-NEW-'+Math.floor(Math.random()*900+100)),f.pmMachine||'เครื่องจักรใหม่',f.pmDept||'Mechanical',f.pmFreq||'รายเดือน',due,f.pmPrio||'Medium',0,f.pmOwner||'ไมตรี ร.',false,(f.pmDesc||'')];this.setState(st=>({extraPlans:[raw,...st.extraPlans],modal:null,screen:'plans'}));this.toastMsg('สร้างแผน PM '+raw[0]+' แล้ว');},
+      pmModalTitle:s.editingPlan?'แก้ไขแผน PM':'สร้างแผน PM ใหม่',
+      pmModalSub:s.editingPlan?('EDIT PLAN · '+s.editingPlan):'NEW PREVENTIVE MAINTENANCE PLAN',
+      pmSaveLabel:s.editingPlan?'บันทึกการแก้ไข':'บันทึกแผน PM',
+      delTarget:s.delTarget, isDelModal:!!s.delTarget,
+      cancelDelete:()=>this.setState({delTarget:null}),
+      confirmDelete:()=>{const t=this.state.delTarget;if(!t)return;this.setState(st=>({deletedMachines:[...(st.deletedMachines||[]),t.code],extraMachines:(st.extraMachines||[]).filter(m=>m.code!==t.code),delTarget:null}));this.toastMsg('ลบเครื่องจักร '+t.code+' แล้ว');}
+    };
+  }
+}
+</script>
+</body>
+</html>
