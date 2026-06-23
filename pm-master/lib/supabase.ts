@@ -1,6 +1,21 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://YOUR-PROJECT.supabase.co'
-const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'YOUR-ANON-PUBLIC-KEY'
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON)
+const isConfigured =
+  url.startsWith('https://') &&
+  !url.includes('YOUR-PROJECT') &&
+  key.length > 20 &&
+  !key.includes('YOUR-ANON')
+
+let _client: SupabaseClient | null = null
+
+export function getSupabase(): SupabaseClient | null {
+  if (!isConfigured) return null
+  if (!_client) _client = createClient(url, key)
+  return _client
+}
+
+// backward-compat shim — pages that import { supabase } still compile
+export const supabase = isConfigured ? createClient(url, key) : null as unknown as SupabaseClient
