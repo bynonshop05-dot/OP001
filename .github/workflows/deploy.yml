@@ -1,44 +1,54 @@
-name: Deploy to GitHub Pages
-
-# Deploy เว็บ static (index.html + config.js) ขึ้น GitHub Pages อัตโนมัติ
-# ทุกครั้งที่ push เข้า branch หลัก
+name: Deploy PM Master System to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:        # กดรันเองได้จากแท็บ Actions
+    branches: [main]
+  workflow_dispatch:
 
-# สิทธิ์ที่ GitHub Pages ต้องใช้
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# ให้ deploy ทีละครั้ง ไม่ทับซ้อน
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pm-master/package-lock.json
+
+      - name: Install dependencies
+        working-directory: pm-master
+        run: npm ci
+
+      - name: Build Next.js static export
+        working-directory: pm-master
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # อัปโหลดทั้งโฟลเดอร์ (เว็บ static อยู่ที่ root)
-          path: "."
+          path: pm-master/out
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
