@@ -73,3 +73,24 @@
 ตั้งค่า config.js แล้ว   →  ดึงข้อมูลจริงจาก Supabase → แสดง "Live Data"
 เชื่อมต่อไม่สำเร็จ        →  fallback กลับไปข้อมูลตัวอย่าง + เตือนบนแถบสถานะ
 ```
+
+---
+
+## ระบบการเงินโรงเรียน (`school-finance/`) + ระบบ Login
+
+เว็บอยู่ที่ `https://bynonshop05-dot.github.io/OP001/school-finance/`
+(deploy พร้อมกับ workflow เดิมเมื่อ push เข้า `main`)
+
+ทุกคนต้อง **เข้าสู่ระบบ** ก่อนจึงจะเห็นและบันทึกข้อมูลได้ ใช้ Supabase Auth (อีเมล + รหัสผ่าน)
+
+### ตั้งค่าครั้งเดียว
+1. **สร้างตาราง** — Supabase → **SQL Editor** → วาง [`supabase/school_finance.sql`](supabase/school_finance.sql) → **Run**
+2. **สร้างผู้ใช้** — **Authentication** → **Users** → **Add user** → **Create new user**
+   ใส่อีเมล + รหัสผ่าน และติ๊ก **Auto Confirm User**
+3. **ปิดการสมัครเอง** (แนะนำ) — **Authentication** → **Sign In / Providers** → ปิด **Allow new users to sign up**
+   เพื่อให้มีแต่บัญชีที่ผู้ดูแลสร้างเท่านั้นที่เข้าได้
+4. (ถ้าจะใช้ "ลืมรหัสผ่าน") **Authentication** → **URL Configuration** → เพิ่ม URL ของเว็บใน **Redirect URLs**
+
+ค่าเชื่อมต่ออยู่ใน [`school-finance/config.js`](school-finance/config.js)
+
+> ถ้ายังไม่ได้รันข้อ 1 เว็บจะยัง login ได้ แต่ข้อมูลจะเก็บไว้ในเบราว์เซอร์เครื่องนั้นเท่านั้น และขึ้นแถบเตือนไว้ด้านบน

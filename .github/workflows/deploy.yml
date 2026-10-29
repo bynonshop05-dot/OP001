@@ -37,6 +37,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: npm run build
 
+      - name: Add School Finance System (static)
+        run: cp -r school-finance pm-master/out/school-finance
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
